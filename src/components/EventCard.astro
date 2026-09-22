@@ -1,0 +1,123 @@
+---
+// Card de evento — bloco de data + informações do compromisso.
+import type { EventItem } from '../data/types';
+import { formatDay, formatMonthShort } from '../utils/format';
+
+interface Props {
+  item: EventItem;
+}
+const { item } = Astro.props;
+---
+
+<a class="event-card" href={`/eventos/${item.slug}`}>
+  <div class="event-card__date" aria-hidden="true">
+    <span class="event-card__day">{formatDay(item.date)}</span>
+    <span class="event-card__month">{formatMonthShort(item.date)}</span>
+    <span class="event-card__year">{item.date.slice(0, 4)}</span>
+  </div>
+  <div class="event-card__body">
+    <p class="event-card__meta">
+      {item.time && <span>{item.time}</span>}
+      {item.location && <span>{item.location}</span>}
+    </p>
+    <h3 class="event-card__title">{item.title}</h3>
+    <p class="event-card__excerpt">{item.excerpt}</p>
+    <span class="arrow-link">Detalhes do evento</span>
+  </div>
+</a>
+
+<style>
+  .event-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: clamp(1.25rem, 3vw, 2.25rem);
+    padding-block: clamp(1.5rem, 3vw, 2.25rem);
+    border-bottom: 1px solid var(--line);
+    align-items: start;
+    transition: background-color var(--dur) var(--ease);
+  }
+
+  .event-card:first-child {
+    border-top: 1px solid var(--line);
+  }
+
+  .event-card:hover {
+    background: rgba(163, 18, 27, 0.04);
+  }
+
+  .event-card__date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: clamp(74px, 12vw, 96px);
+    aspect-ratio: 1;
+    background: var(--ink);
+    color: var(--paper);
+    text-align: center;
+    line-height: 1;
+    padding: 0.5rem;
+    transition: background-color var(--dur) var(--ease);
+  }
+
+  .event-card:hover .event-card__date {
+    background: var(--red);
+  }
+
+  .event-card__day {
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 3vw, 2.2rem);
+    font-weight: 700;
+  }
+
+  .event-card__month {
+    margin-top: 0.3rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    font-weight: 600;
+  }
+
+  .event-card__year {
+    margin-top: 0.25rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    opacity: 0.65;
+  }
+
+  .event-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    font-size: var(--fs-eyebrow);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .event-card__meta span + span::before {
+    content: "·";
+    margin-right: 1rem;
+    color: var(--red);
+  }
+
+  .event-card__title {
+    margin-top: 0.55rem;
+    font-size: var(--fs-h4);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .event-card:hover .event-card__title {
+    color: var(--red);
+  }
+
+  .event-card__excerpt {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    max-width: 62ch;
+  }
+
+  .event-card .arrow-link {
+    margin-top: 0.9rem;
+  }
+</style>

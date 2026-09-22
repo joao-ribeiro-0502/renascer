@@ -1,0 +1,45 @@
+---
+// Card de enredo — ano em destaque + título + resumo.
+import type { Enredo } from '../data/types';
+
+interface Props {
+  enredo: Enredo;
+}
+const { enredo } = Astro.props;
+---
+
+<a class="content-card enredo-card" href={`/enredos/${enredo.slug}`}>
+  <div class="content-card__media enredo-card__media">
+    <img src={enredo.image} alt={enredo.imageAlt} loading="lazy" decoding="async" />
+    <span class="enredo-card__year" aria-hidden="true">{enredo.year}</span>
+  </div>
+  <div class="content-card__body">
+    <p class="content-card__meta">
+      <span class="tag tag--red">Enredo {enredo.year}</span>
+      {enredo.sambaTitle && <span>{enredo.sambaTitle}</span>}
+    </p>
+    <h3 class="content-card__title">{enredo.title}</h3>
+    <p class="content-card__excerpt">{enredo.summary}</p>
+    <span class="arrow-link" style="margin-top:auto;padding-top:0.75rem">Ver enredo</span>
+  </div>
+</a>
+
+<style>
+  .enredo-card__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+  }
+
+  .enredo-card__year {
+    position: absolute;
+    right: 0.9rem;
+    bottom: -0.12em;
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 6vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1.2px rgba(247, 244, 239, 0.75);
+    pointer-events: none;
+  }
+</style>

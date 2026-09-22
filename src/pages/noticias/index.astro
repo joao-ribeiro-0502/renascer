@@ -1,0 +1,201 @@
+---
+// Listagem de notícias com filtro por categoria.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import NewsCard from '../../components/NewsCard.astro';
+import { getNews } from '../../data/news';
+
+const news = getNews();
+const categories = ['Todos', ...Array.from(new Set(news.map((n) => n.category)))];
+const [first, ...rest] = news;
+---
+
+<BaseLayout
+  title="Notícias"
+  description="Notícias institucionais da G.R.E.S. Renascer de Jacarepaguá: ensaios, comunidade, carnaval e comunicação oficial."
+>
+  <PageHero
+    title="Notícias"
+    eyebrow="Comunicação institucional"
+    lead="O cotidiano da escola, os ensaios e os anúncios oficiais da comunicação da Renascer."
+    crumbs={[{ label: 'Notícias' }]}
+  />
+
+  <section class="section">
+    <div class="container">
+      {
+        first && (
+          <a class="news-featured" href={`/noticias/${first.slug}`} data-reveal>
+            <div class="news-featured__media">
+              <img src={first.image} alt={first.imageAlt} loading="lazy" decoding="async" />
+            </div>
+            <div class="news-featured__body">
+              <p class="content-card__meta">
+                <span class="tag tag--red">{first.category}</span>
+                <time datetime={first.date}>{first.date.split('-').reverse().join('/')}</time>
+              </p>
+              <h2 class="news-featured__title">{first.title}</h2>
+              <p class="news-featured__excerpt">{first.excerpt}</p>
+              <span class="arrow-link">Ler notícia</span>
+            </div>
+          </a>
+        )
+      }
+
+      <div class="filters" role="group" aria-label="Filtrar notícias por categoria" data-reveal>
+        {
+          categories.map((cat, i) => (
+            <button
+              type="button"
+              class={`filter ${i === 0 ? 'is-active' : ''}`}
+              data-filter={cat}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+            >
+              {cat}
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="card-grid card-grid--3" id="news-grid">
+        {
+          rest.map((item) => (
+            <div data-category={item.category}>
+              <NewsCard item={item} />
+            </div>
+          ))
+        }
+        {
+          first && (
+            <div data-category={first.category}>
+              <NewsCard item={first} />
+            </div>
+          )
+        }
+      </div>
+
+      <p class="filter-empty" id="news-empty" hidden role="status">
+        Nenhuma notícia nesta categoria.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .news-featured {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: center;
+    padding-bottom: clamp(2rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+
+  @media (min-width: 900px) {
+    .news-featured {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    }
+  }
+
+  .news-featured__media {
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    background: var(--paper-deep);
+  }
+
+  .news-featured__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.1s var(--ease);
+  }
+
+  .news-featured:hover .news-featured__media img {
+    transform: scale(1.04);
+  }
+
+  .news-featured__title {
+    margin-top: 1rem;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .news-featured:hover .news-featured__title {
+    color: var(--red);
+  }
+
+  .news-featured__excerpt {
+    margin-top: 0.9rem;
+    color: var(--muted);
+    max-width: 58ch;
+  }
+
+  .news-featured .arrow-link {
+    margin-top: 1.25rem;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+  }
+
+  .filter {
+    padding: 0.5rem 1.1rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    transition: all var(--dur) var(--ease);
+  }
+
+  .filter:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .filter.is-active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .filter-empty {
+    margin-top: 2rem;
+    padding: 2rem;
+    text-align: center;
+    border: 1px dashed var(--line);
+    color: var(--muted);
+  }
+
+  #news-grid > div[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter');
+  const items = document.querySelectorAll<HTMLElement>('#news-grid > div');
+  const empty = document.getElementById('news-empty');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter ?? 'Todos';
+      buttons.forEach((b) => {
+        const active = b === btn;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', String(active));
+      });
+      let visible = 0;
+      items.forEach((item) => {
+        const show = filter === 'Todos' || item.dataset.category === filter;
+        item.hidden = !show;
+        if (show) visible += 1;
+      });
+      if (empty) empty.hidden = visible > 0;
+    });
+  });
+</script>

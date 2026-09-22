@@ -1,0 +1,166 @@
+---
+// Página institucional "A Escola".
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import Figure from '../components/Figure.astro';
+import CTA from '../components/CTA.astro';
+import { site } from '../data/site';
+import { schoolPillars } from '../data/historia';
+import { getSegments } from '../data/segments';
+
+const segments = getSegments();
+---
+
+<BaseLayout
+  title="A Escola"
+  description={`Conheça a ${site.fullName}: identidade, propósito, comunidade e a presença da escola em Jacarepaguá.`}
+>
+  <PageHero
+    title="Uma escola de samba feita por quem vive o bairro"
+    eyebrow="Institucional"
+    lead={`A ${site.shortName} é cultura popular, memória e pertencimento. Conheça quem somos e o que nos move.`}
+    crumbs={[{ label: 'A Escola' }]}
+  />
+
+  <!-- IDENTIDADE -->
+  <section class="section">
+    <div class="container">
+      <div class="two-col">
+        <div data-reveal>
+          <span class="eyebrow">Identidade</span>
+          <h2 class="display-title">Quem é a Renascer</h2>
+          <div class="prose" style="margin-top:1.5rem">
+            <p>
+              A {site.fullName} é uma escola de samba com raízes em Jacarepaguá, no Rio de
+              Janeiro. Seu nome traduz uma ideia simples e poderosa: recomeço constante,
+              força coletiva e fé no que se constrói junto.
+            </p>
+            <p>
+              Ao longo do ano letivo e da temporada de carnaval, a escola funciona como
+              ponto de encontro entre gerações — da velha guarda aos passistas, dos
+              compositores às famílias que ocupam a quadra todas as semanas.
+            </p>
+            <p>
+              <strong>Nota editorial:</strong> informações factuais como data de fundação,
+              títulos e cargos serão inseridas somente após validação com a diretoria da
+              escola.
+            </p>
+          </div>
+        </div>
+        <div data-reveal>
+          <Figure
+            src="/assets/images/school/escola-01.jpg"
+            alt="Grafismo institucional da Renascer de Jacarepaguá"
+            ratio="4 / 3"
+            caption="Identidade visual · material provisório aguardando registro oficial"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROPÓSITO E CULTURA -->
+  <section class="section section--alt">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Propósito"
+        title="O que nos move"
+        lead="Quatro pilares que organizam a atuação da escola — base editorial a ser confirmada com a gestão institucional."
+      />
+      <div class="pillars">
+        {
+          schoolPillars.map((pillar, i) => (
+            <article class="pillar" data-reveal>
+              <span class="pillar__index">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="pillar__title">{pillar.title}</h3>
+              <p class="pillar__text">{pillar.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- COMUNIDADE -->
+  <section class="section">
+    <div class="container">
+      <div class="two-col" style="align-items:center">
+        <div data-reveal>
+          <Figure
+            src="/assets/images/school/escola-02.jpg"
+            alt="Grafismo institucional em tons de vermelho da escola"
+            ratio="4 / 3"
+          />
+        </div>
+        <div data-reveal>
+          <span class="eyebrow">Comunidade</span>
+          <h2 class="display-title">Jacarepaguá é o nosso endereço e o nosso pulso</h2>
+          <div class="prose" style="margin-top:1.5rem">
+            <p>
+              A escola vive no território: nos ensaios da quadra, nas reuniões, nas ruas do
+              bairro e nos encontros que atravessam o calendário cultural de Jacarepaguá.
+            </p>
+            <p>
+              Ser da Renascer é participar — ensaiando, aprendendo, transmitindo. Os {segments.length}{' '}
+              segmentos da escola formam um ecossistema cultural onde cada pessoa encontra
+              seu lugar.
+            </p>
+            <p>
+              <a href="/segmentos">Conheça os segmentos</a> e descubra como participar das
+              atividades.
+            </p>
+          </div>
+          <div class="btn-row">
+            <a class="btn btn--primary" href="/segmentos">Ver segmentos</a>
+            <a class="btn btn--ghost" href="/historia">Nossa história</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CTA
+    eyebrow="Contato institucional"
+    title="Quer conhecer a escola de perto?"
+    text="Acesse a agenda dos ensaios e eventos ou fale com a comunicação institucional."
+    primary={{ href: '/eventos', label: 'Ver agenda' }}
+    secondary={{ href: '/contato', label: 'Falar com a escola' }}
+  />
+</BaseLayout>
+
+<style>
+  .pillars {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  }
+
+  .pillar {
+    padding-top: 1.4rem;
+    border-top: 3px solid var(--ink);
+    transition: border-color var(--dur) var(--ease);
+  }
+
+  .pillar:hover {
+    border-color: var(--red);
+  }
+
+  .pillar__index {
+    font-size: var(--fs-eyebrow);
+    letter-spacing: 0.16em;
+    color: var(--red);
+    font-weight: 600;
+  }
+
+  .pillar__title {
+    margin-top: 0.75rem;
+    font-size: var(--fs-h4);
+  }
+
+  .pillar__text {
+    margin-top: 0.6rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
+</style>

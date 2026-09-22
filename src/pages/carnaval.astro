@@ -1,0 +1,196 @@
+---
+// Página "Carnaval" — temporada atual, ficha técnica e acervo de enredos.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import ButtonLink from '../components/ButtonLink.astro';
+import EnredoCard from '../components/EnredoCard.astro';
+import EmptyState from '../components/EmptyState.astro';
+import CTA from '../components/CTA.astro';
+import { carnaval } from '../data/carnaval';
+import { getEnredos, getEnredoBySlug } from '../data/enredos';
+
+const enredo = carnaval.enredoSlug ? getEnredoBySlug(carnaval.enredoSlug) : undefined;
+const enredos = getEnredos().filter((e) => e.slug !== carnaval.enredoSlug);
+const pendingValue = (v: string | null) => !v;
+---
+
+<BaseLayout
+  title="Carnaval"
+  description={`Carnaval da G.R.E.S. Renascer de Jacarepaguá: enredo ${carnaval.year}, samba-enredo, ficha técnica e acervo de enredos.`}
+>
+  <PageHero
+    title={`Carnaval ${carnaval.year}`}
+    eyebrow={`Temporada · ${carnaval.status}`}
+    lead="Enredo, samba, ficha técnica e registros de cada temporada — a área do carnaval da escola."
+    crumbs={[{ label: 'Carnaval' }]}
+  />
+
+  <!-- ENREDO DA TEMPORADA -->
+  <section class="section">
+    <div class="container">
+      <div class="feature feature--split">
+        <div class="feature__media" data-reveal>
+          {
+            enredo ? (
+              <div class="figure figure--hoverable">
+                <img src={enredo.image} alt={enredo.imageAlt} loading="lazy" decoding="async" />
+              </div>
+            ) : (
+              <div class="state">
+                <p class="state__title">Enredo da temporada</p>
+                <p>Conteúdo será disponibilizado após a divulgação oficial.</p>
+              </div>
+            )
+          }
+          <span class="feature__year" aria-hidden="true">{carnaval.year}</span>
+        </div>
+
+        <div data-reveal>
+          <span class="eyebrow">Enredo do ano</span>
+          <h2 class="display-title">{carnaval.enredoTitle}</h2>
+          {
+            enredo && (
+              <p class="lead" style="margin-top:1.2rem">{enredo.summary}</p>
+            )
+          }
+
+          <dl class="ficha">
+            {
+              carnaval.ficha.map((row) => (
+                <div class="ficha__row">
+                  <dt class="ficha__key">{row.label}</dt>
+                  <dd class={row.value ? 'ficha__value' : 'ficha__value ficha__value--pending'}>
+                    {row.value ?? 'A confirmar'}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+
+          <div class="btn-row">
+            {
+              enredo && (
+                <ButtonLink href={`/enredos/${enredo.slug}`} variant="primary" label="Ver enredo completo" />
+              )
+            }
+            <ButtonLink href="/enredos" variant="ghost" label="Enredos de outros anos" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SAMBA-ENREDO -->
+  <section class="section section--red">
+    <div class="container">
+      <div class="samba-block" data-reveal>
+        <span class="eyebrow">Samba-enredo</span>
+        <p class="samba-block__title">{carnaval.sambaTitle}</p>
+        <p class="samba-block__authors">
+          Compositores: <em>a confirmar com a diretoria da escola</em>
+        </p>
+        <p class="samba-block__note">
+          A letra oficial será publicada nesta área mediante autorização dos compositores.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESFILE / INFORMAÇÕES -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="two-col">
+        <div data-reveal>
+          <span class="eyebrow">Desfile</span>
+          <h2 class="display-title">Informações do desfile</h2>
+          <dl class="ficha">
+            <div class="ficha__row">
+              <dt class="ficha__key">Data</dt>
+              <dd class="ficha__value ficha__value--pending">A confirmar</dd>
+            </div>
+            <div class="ficha__row">
+              <dt class="ficha__key">Local</dt>
+              <dd class="ficha__value ficha__value--pending">A confirmar</dd>
+            </div>
+            <div class="ficha__row">
+              <dt class="ficha__key">Grupo / liga</dt>
+              <dd class="ficha__value ficha__value--pending">A confirmar</dd>
+            </div>
+            <div class="ficha__row">
+              <dt class="ficha__key">Posição de desfile</dt>
+              <dd class="ficha__value ficha__value--pending">A confirmar</dd>
+            </div>
+          </dl>
+        </div>
+        <div data-reveal>
+          <span class="eyebrow">Vídeos</span>
+          <h2 class="display-title">Registros em vídeo</h2>
+          <div style="margin-top:1.5rem">
+            <EmptyState
+              title="Vídeos da temporada"
+              message="Esta área receberá os vídeos oficiais (samba-enredo, ensaios e desfiles) após a integração com a fonte de dados oficial."
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACERVO DE ENREDOS -->
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Acervo"
+        title="Enredos de cada temporada"
+        lead="Cada ano carrega uma narrativa. Consulte os enredos já registrados pela escola."
+        link={{ href: '/enredos', label: 'Catálogo completo' }}
+      />
+      <div class="card-grid card-grid--3">
+        {enredos.slice(0, 3).map((item) => <EnredoCard enredo={item} />)}
+      </div>
+    </div>
+  </section>
+
+  <CTA
+    eyebrow="Temporada"
+    title="Acompanhe o carnaval da Renascer o ano inteiro"
+    text="Notícias, agenda de ensaios e o acervo completo dos enredos estão a um clique."
+    primary={{ href: '/noticias', label: 'Notícias do carnaval' }}
+    secondary={{ href: '/eventos', label: 'Agenda de ensaios' }}
+  />
+</BaseLayout>
+
+<style>
+  .samba-block {
+    max-width: 46rem;
+  }
+
+  .samba-block__title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 700;
+    font-style: italic;
+    line-height: 1.1;
+    margin-top: 1rem;
+  }
+
+  .samba-block__authors {
+    margin-top: 1.25rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: rgba(247, 244, 239, 0.85);
+  }
+
+  .samba-block__note {
+    margin-top: 0.75rem;
+    font-size: 0.86rem;
+    color: rgba(247, 244, 239, 0.62);
+    max-width: 54ch;
+  }
+
+  .section--red .ficha__value--pending,
+  .section--red .ficha__key {
+    color: rgba(247, 244, 239, 0.7);
+  }
+</style>

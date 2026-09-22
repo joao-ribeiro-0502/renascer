@@ -1,0 +1,149 @@
+---
+// Página individual de evento.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ButtonLink from '../../components/ButtonLink.astro';
+import CTA from '../../components/CTA.astro';
+import { getEvents, getEventBySlug } from '../../data/events';
+import { formatDate } from '../../utils/format';
+
+export function getStaticPaths() {
+  return getEvents().map((item) => ({ params: { slug: item.slug } }));
+}
+
+const { slug } = Astro.params;
+const event = getEventBySlug(slug ?? '');
+
+if (!event) {
+  throw new Error(`Evento não encontrado: ${slug}`);
+}
+
+const outros = getEvents().filter((e) => e.slug !== event.slug).slice(0, 3);
+---
+
+<BaseLayout title={event.title} description={event.excerpt} type="article">
+  <PageHero
+    title={event.title}
+    eyebrow="Agenda institucional"
+    lead={event.excerpt}
+    crumbs={[{ label: 'Eventos', href: '/eventos' }, { label: event.title }]}
+    image={event.image}
+  >
+    <p class="event-hero__meta">
+      <time datetime={event.date}>{formatDate(event.date)}</time>
+      {event.time && <span aria-hidden="true">·</span>}
+      {event.time && <span>{event.time}</span>}
+      {event.location && <span aria-hidden="true">·</span>}
+      {event.location && <span>{event.location}</span>}
+    </p>
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <div class="detail-grid">
+        <div data-reveal>
+          <span class="eyebrow">Sobre o evento</span>
+          <div class="prose" style="margin-top:1.4rem">
+            {event.description.map((p) => <p>{p}</p>)}
+          </div>
+          <div class="btn-row">
+            <ButtonLink href="/eventos" variant="ghost" label="Voltar à agenda" />
+            <ButtonLink href="/contato" variant="primary" label="Tirar dúvidas" />
+          </div>
+        </div>
+
+        <aside data-reveal>
+          <span class="eyebrow">Informações</span>
+          <dl class="ficha">
+            {
+              event.info.map((row) => (
+                <div class="ficha__row">
+                  <dt class="ficha__key">{row.label}</dt>
+                  <dd class={row.value ? 'ficha__value' : 'ficha__value ficha__value--pending'}>
+                    {row.value ?? 'A confirmar'}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+
+          <div class="map-placeholder" role="img" aria-label="Mapa do local será adicionado após a confirmação do endereço">
+            <img src="/assets/images/bandeira-textura-suave.jpg" alt="" loading="lazy" />
+            <p>Mapa do local · endereço oficial a confirmar</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  {
+    outros.length > 0 && (
+      <section class="section section--alt">
+        <div class="container">
+          <header class="section-header">
+            <div class="section-header__text">
+              <span class="eyebrow">Calendário</span>
+              <h2 class="display-title">Próximos eventos</h2>
+            </div>
+            <a class="arrow-link" href="/eventos">
+              Agenda completa
+            </a>
+          </header>
+          <div class="list-rows">
+            {outros.map((item) => (
+              <a class="list-row" href={`/eventos/${item.slug}`}>
+                <div>
+                  <p class="list-row__meta">
+                    <time datetime={item.date}>{formatDate(item.date)}</time>
+                    {item.time && <span>{item.time}</span>}
+                  </p>
+                  <h3 class="list-row__title">{item.title}</h3>
+                </div>
+                <span class="list-row__arrow" aria-hidden="true">
+                  →
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <CTA
+    eyebrow="Participe"
+    title="Quer integrar os eventos da escola?"
+    text="Acesse a área de segmentos ou fale diretamente com a comunicação institucional."
+    primary={{ href: '/segmentos', label: 'Ver segmentos' }}
+    secondary={{ href: '/contato', label: 'Contato' }}
+  />
+</BaseLayout>
+
+<style>
+  .event-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+    font-size: 0.86rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(247, 244, 239, 0.8);
+  }
+
+  .detail-grid {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  @media (min-width: 960px) {
+    .detail-grid {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      align-items: start;
+    }
+    .detail-grid aside {
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+  }
+</style>

@@ -1,0 +1,49 @@
+---
+// Catálogo de enredos.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import EnredoCard from '../../components/EnredoCard.astro';
+import CTA from '../../components/CTA.astro';
+import { getEnredos } from '../../data/enredos';
+
+const enredos = getEnredos();
+---
+
+<BaseLayout
+  title="Enredos"
+  description="Catálogo de enredos da G.R.E.S. Renascer de Jacarepaguá — cada temporada, uma narrativa."
+>
+  <PageHero
+    title="Enredos"
+    eyebrow="Acervo"
+    lead="Cada ano a escola apresenta uma história ao país. Aqui ficam registrados os enredos de cada temporada."
+    crumbs={[{ label: 'Enredos' }]}
+  />
+
+  <section class="section">
+    <div class="container">
+      {
+        enredos.length === 0 ? (
+          <div class="state">
+            <p class="state__title">Nenhum enredo publicado</p>
+            <p>O catálogo será preenchido mediante integração com o acervo oficial.</p>
+          </div>
+        ) : (
+          <div class="card-grid card-grid--3">
+            {enredos.map((enredo) => (
+              <EnredoCard enredo={enredo} />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <CTA
+    eyebrow="Carnaval"
+    title="Quer reviver a temporada atual?"
+    text="A área do carnaval reúne ficha técnica, samba-enredo e informações do desfile."
+    primary={{ href: '/carnaval', label: 'Ir para o carnaval' }}
+    secondary={{ href: '/noticias', label: 'Notícias' }}
+  />
+</BaseLayout>

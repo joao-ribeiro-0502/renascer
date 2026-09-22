@@ -1,0 +1,59 @@
+---
+// Página institucional dos segmentos.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import SegmentCard from '../../components/SegmentCard.astro';
+import CTA from '../../components/CTA.astro';
+import { getSegments } from '../../data/segments';
+
+const segments = getSegments();
+---
+
+<BaseLayout
+  title="Segmentos"
+  description="Conheça os segmentos da G.R.E.S. Renascer de Jacarepaguá: bateria, harmonia, passistas, baianas, velha guarda e demais alas da escola."
+>
+  <PageHero
+    title="Segmentos"
+    eyebrow="Comunidade"
+    lead="Cada segmento tem sua função, sua história e seu jeito de fazer a escola acontecer."
+    crumbs={[{ label: 'Segmentos' }]}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="intro" data-reveal>
+        <p class="lead">
+          Os segmentos formam a estrutura viva da Renascer. Do primeiro ensaio ao desfile,
+          cada ala trabalha em conjunto para dar forma à apresentação da escola — e cada
+          pessoa encontra aqui um lugar para participar.
+        </p>
+        <p class="media-note">
+          Composições e coordenações serão publicadas mediante confirmação oficial.
+        </p>
+      </div>
+
+      <div class="card-grid card-grid--3" style="margin-top:clamp(2.5rem,5vw,4rem)">
+        {
+          segments.map((segment, i) => (
+            <SegmentCard segment={segment} index={i} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CTA
+    eyebrow="Faça parte"
+    title="Quer participar de um segmento?"
+    text="Fale com a comunicação institucional e tire suas dúvidas sobre inscrições, ensaios e calendário."
+    primary={{ href: '/contato', label: 'Entrar em contato' }}
+    secondary={{ href: '/eventos', label: 'Ver agenda de ensaios' }}
+  />
+</BaseLayout>
+
+<style>
+  .intro {
+    max-width: 780px;
+  }
+</style>

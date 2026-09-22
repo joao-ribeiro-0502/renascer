@@ -1,0 +1,44 @@
+---
+// Hero padrão das páginas internas, com trilha de navegação (breadcrumb).
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  title: string;
+  lead?: string;
+  eyebrow?: string;
+  crumbs?: Crumb[];
+  image?: string;
+}
+const { title, lead, eyebrow, crumbs = [], image = '/assets/images/hero/renascer-hero-interna.jpg' } =
+  Astro.props;
+---
+
+<section class="page-hero">
+  <div class="page-hero__media" aria-hidden="true">
+    <img src={image} alt="" width="1920" height="900" fetchpriority="high" />
+  </div>
+  <div class="container page-hero__content">
+    <nav aria-label="Navegação estrutural">
+      <ol class="breadcrumb">
+        <li><a href="/">Início</a></li>
+        {
+          crumbs.map((c, i) => (
+            <li>
+              {c.href && i < crumbs.length - 1 ? (
+                <a href={c.href}>{c.label}</a>
+              ) : (
+                <span aria-current="page">{c.label}</span>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+    {eyebrow && <span class="eyebrow" style="margin-top:1.6rem">{eyebrow}</span>}
+    <h1 class="page-hero__title">{title}</h1>
+    {lead && <p class="page-hero__lead">{lead}</p>}
+    <slot />
+  </div>
+</section>

@@ -1,0 +1,16 @@
+---
+// Estado de erro — exibido quando o carregamento de dados falha (uso futuro com API).
+interface Props {
+  title?: string;
+  message?: string;
+}
+const {
+  title = 'Não foi possível carregar o conteúdo',
+  message = 'Tente novamente em instantes. Se o problema persistir, entre em contato com a escola.',
+} = Astro.props;
+---
+
+<div class="state" role="alert">
+  <p class="state__title">{title}</p>
+  <p>{message}</p>
+</div>

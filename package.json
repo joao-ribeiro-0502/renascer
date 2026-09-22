@@ -1,0 +1,27 @@
+{
+  "name": "renascer-site",
+  "version": "1.0.0",
+  "description": "Site institucional da G.R.E.S. Renascer de Jacarepaguá — frontend",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "images": "node scripts/process-images.mjs",
+    "check": "node scripts/check-site.mjs",
+    "test:visual": "node scripts/visual-test.mjs"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/playfair-display": "^5.3.0",
+    "astro": "^7.3.3"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0",
+    "sharp": "^0.35.4",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,12 @@
+# Dependências e build
+node_modules/
+dist/
+.astro/
+
+# Artefatos de teste visual
+.test-shots/
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log

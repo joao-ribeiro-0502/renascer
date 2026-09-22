@@ -1,0 +1,198 @@
+---
+// Página de contato — preparada visualmente para futura integração com backend.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+
+const socialEntries = Object.entries(site.social) as [string, string | null][];
+---
+
+<BaseLayout
+  title="Contato"
+  description={`Contato institucional da G.R.E.S. Renascer de Jacarepaguá — endereço, telefone, redes sociais e formulário.`}
+>
+  <PageHero
+    title="Fale com a Renascer"
+    eyebrow="Contato"
+    lead="Dúvidas, inscrições, imprensa e parcerias: encontre a comunicação institucional da escola."
+    crumbs={[{ label: 'Contato' }]}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="contact-grid">
+        <!-- Informações -->
+        <div data-reveal>
+          <span class="eyebrow">Informações</span>
+          <h2 class="display-title">Onde nos encontrar</h2>
+
+          <div style="margin-top:2rem">
+            <div class="info-block">
+              <p class="info-block__label">Endereço</p>
+              {
+                site.address ? (
+                  <p class="info-block__value">{site.address}</p>
+                ) : (
+                  <p class="info-block__value">Endereço oficial a confirmar</p>
+                )
+              }
+              <p class="info-block__note">{site.location}</p>
+            </div>
+
+            <div class="info-block">
+              <p class="info-block__label">Telefone</p>
+              {
+                site.phone ? (
+                  <p class="info-block__value">
+                    <a href={`tel:${site.phone}`}>{site.phone}</a>
+                  </p>
+                ) : (
+                  <p class="info-block__value">Telefone oficial a confirmar</p>
+                )
+              }
+            </div>
+
+            <div class="info-block">
+              <p class="info-block__label">E-mail</p>
+              {
+                site.email ? (
+                  <p class="info-block__value">
+                    <a href={`mailto:${site.email}`}>{site.email}</a>
+                  </p>
+                ) : (
+                  <p class="info-block__value">E-mail oficial a confirmar</p>
+                )
+              }
+            </div>
+
+            <div class="info-block">
+              <p class="info-block__label">Redes sociais</p>
+              {
+                socialEntries.every(([, url]) => !url) ? (
+                  <p class="info-block__value">Perfis oficiais a confirmar</p>
+                ) : (
+                  <ul class="social-list">
+                    {socialEntries
+                      .filter(([, url]) => Boolean(url))
+                      .map(([name, url]) => (
+                        <li>
+                          <a href={url as string} target="_blank" rel="noopener noreferrer">
+                            {name}
+                          </a>
+                        </li>
+                      ))}
+                  </ul>
+                )
+              }
+            </div>
+          </div>
+
+          <div class="map-placeholder" role="img" aria-label="Mapa será adicionado após a confirmação do endereço">
+            <img src="/assets/images/bandeira-textura-suave.jpg" alt="" loading="lazy" />
+            <p>Mapa da sede · endereço oficial a confirmar</p>
+          </div>
+        </div>
+
+        <!-- Formulário -->
+        <div data-reveal>
+          <span class="eyebrow">Mensagem</span>
+          <h2 class="display-title">Envie uma mensagem</h2>
+          <p class="lead" style="margin-top:1rem">
+            Preencha os campos abaixo. O envio estará integrado ao canal oficial da escola
+            em uma próxima etapa.
+          </p>
+
+          <form id="contact-form" class="contact-form" novalidate>
+            <div class="form-grid form-grid--2">
+              <div class="field">
+                <label for="nome">Nome</label>
+                <input id="nome" name="nome" type="text" autocomplete="name" required />
+              </div>
+              <div class="field">
+                <label for="email">E-mail</label>
+                <input id="email" name="email" type="email" autocomplete="email" required />
+              </div>
+            </div>
+
+            <div class="form-grid form-grid--2">
+              <div class="field">
+                <label for="telefone">Telefone</label>
+                <input id="telefone" name="telefone" type="tel" autocomplete="tel" />
+              </div>
+              <div class="field">
+                <label for="assunto">Assunto</label>
+                <select id="assunto" name="assunto" required>
+                  <option value="">Selecione</option>
+                  <option value="segmentos">Integração de segmentos</option>
+                  <option value="eventos">Agenda e eventos</option>
+                  <option value="imprensa">Imprensa</option>
+                  <option value="parcerias">Parcerias</option>
+                  <option value="outros">Outros assuntos</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="mensagem">Mensagem</label>
+              <textarea id="mensagem" name="mensagem" rows="6" required></textarea>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn--primary">Enviar mensagem</button>
+            </div>
+
+            <p class="form-status" id="form-status" role="status" aria-live="polite" hidden>
+              Envio preparado para integração futura — nenhum dado foi transmitido.
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .social-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.4rem;
+  }
+
+  .social-list a {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    border-bottom: 1px solid var(--line);
+    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+
+  .social-list a:hover {
+    color: var(--red);
+    border-color: var(--red);
+  }
+
+  .contact-form {
+    margin-top: 2rem;
+    display: grid;
+    gap: 1.75rem;
+  }
+
+  .contact-form .btn {
+    justify-self: start;
+  }
+</style>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const status = document.getElementById('form-status');
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    if (status) status.hidden = false;
+    form.reset();
+  });
+</script>

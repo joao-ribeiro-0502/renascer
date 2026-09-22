@@ -1,0 +1,34 @@
+---
+// Chamada institucional com fundo da bandeira — usada ao fim de páginas.
+interface Props {
+  eyebrow?: string;
+  title: string;
+  text?: string;
+  primary?: { href: string; label: string };
+  secondary?: { href: string; label: string };
+}
+const {
+  eyebrow = 'Participe',
+  title,
+  text,
+  primary,
+  secondary,
+} = Astro.props;
+---
+
+<section class="cta">
+  <div class="cta__media" aria-hidden="true">
+    <img src="/assets/images/bandeira-textura.jpg" alt="" loading="lazy" decoding="async" />
+  </div>
+  <div class="container">
+    <div class="cta__content" data-reveal>
+      <span class="eyebrow">{eyebrow}</span>
+      <h2 class="cta__title">{title}</h2>
+      {text && <p class="cta__text">{text}</p>}
+      <div class="btn-row">
+        {primary && <a class="btn btn--light" href={primary.href}>{primary.label}</a>}
+        {secondary && <a class="btn btn--ghost" href={secondary.href}>{secondary.label}</a>}
+      </div>
+    </div>
+  </div>
+</section>

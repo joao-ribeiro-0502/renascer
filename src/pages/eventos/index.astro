@@ -1,0 +1,77 @@
+---
+// Agenda institucional de eventos.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import EventCard from '../../components/EventCard.astro';
+import CTA from '../../components/CTA.astro';
+import { getEvents } from '../../data/events';
+import { formatMonthYear, monthKey } from '../../utils/format';
+
+const events = getEvents();
+const groups = events.reduce<Record<string, typeof events>>((acc, event) => {
+  const key = monthKey(event.date);
+  (acc[key] ||= []).push(event);
+  return acc;
+}, {});
+const months = Object.keys(groups).sort();
+---
+
+<BaseLayout
+  title="Agenda de eventos"
+  description="Agenda institucional da G.R.E.S. Renascer de Jacarepaguá: ensaios, reuniões, apresentações e eventos da comunidade."
+>
+  <PageHero
+    title="Agenda de eventos"
+    eyebrow="Calendário"
+    lead="Ensaios, encontros e apresentações da temporada — data, horário e local de cada compromisso."
+    crumbs={[{ label: 'Eventos' }]}
+  />
+
+  <section class="section">
+    <div class="container">
+      {
+        events.length === 0 ? (
+          <div class="state">
+            <p class="state__title">Agenda em atualização</p>
+            <p>Os próximos compromissos serão publicados em breve.</p>
+          </div>
+        ) : (
+          months.map((key) => (
+            <section class="month-block" aria-label={formatMonthYear(groups[key][0].date)}>
+              <h2 class="month-block__title" data-reveal>
+                {formatMonthYear(groups[key][0].date)}
+              </h2>
+              <div data-reveal>
+                {groups[key].map((event) => (
+                  <EventCard item={event} />
+                ))}
+              </div>
+            </section>
+          ))
+        )
+      }
+    </div>
+  </section>
+
+  <CTA
+    eyebrow="Comunidade"
+    title="Quer receber a programação da escola?"
+    text="Acompanhe a agenda aqui no site e nas comunicações oficiais da Renascer."
+    primary={{ href: '/contato', label: 'Falar com a escola' }}
+    secondary={{ href: '/noticias', label: 'Ler notícias' }}
+  />
+</BaseLayout>
+
+<style>
+  .month-block + .month-block {
+    margin-top: clamp(2.75rem, 6vw, 4.5rem);
+  }
+
+  .month-block__title {
+    font-size: clamp(1.3rem, 2.4vw, 1.75rem);
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid var(--ink);
+    letter-spacing: 0.01em;
+  }
+</style>

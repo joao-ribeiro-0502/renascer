@@ -1,0 +1,43 @@
+---
+// Card de segmento — índice, nome e descrição curta.
+import type { Segment } from '../data/types';
+
+interface Props {
+  segment: Segment;
+  index: number;
+}
+const { segment, index } = Astro.props;
+const num = String(index + 1).padStart(2, '0');
+---
+
+<a class="content-card segment-card" href={`/segmentos/${segment.slug}`}>
+  <div class="content-card__media segment-card__media">
+    <img src={segment.image} alt={segment.imageAlt} loading="lazy" decoding="async" />
+    <span class="segment-card__index" aria-hidden="true">{num}</span>
+  </div>
+  <div class="content-card__body">
+    <h3 class="content-card__title">{segment.name}</h3>
+    <p class="content-card__excerpt">{segment.summary}</p>
+    <span class="arrow-link" style="margin-top:auto;padding-top:0.5rem">Conhecer o segmento</span>
+  </div>
+</a>
+
+<style>
+  .segment-card__media {
+    position: relative;
+    aspect-ratio: 5 / 4;
+  }
+
+  .segment-card__index {
+    position: absolute;
+    top: 0.9rem;
+    left: 1rem;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    color: rgba(247, 244, 239, 0.9);
+    padding: 0.2rem 0.55rem;
+    background: rgba(10, 10, 12, 0.55);
+    border-left: 2px solid var(--red-bright);
+  }
+</style>

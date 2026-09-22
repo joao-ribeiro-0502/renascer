@@ -1,0 +1,12 @@
+---
+// Estado de carregamento — reservado para consumo assíncrono futuro (API).
+interface Props {
+  message?: string;
+}
+const { message = 'Carregando conteúdo…' } = Astro.props;
+---
+
+<div class="state" role="status" aria-live="polite">
+  <p class="state__title">{message}</p>
+  <p>Aguarde um instante.</p>
+</div>

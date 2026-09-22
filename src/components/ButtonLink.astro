@@ -1,0 +1,12 @@
+---
+// Botão de link reutilizável — variações: primary | ghost | light
+interface Props {
+  href: string;
+  variant?: 'primary' | 'ghost' | 'light';
+  label: string;
+  class?: string;
+}
+const { href, variant = 'primary', label, class: className = '' } = Astro.props;
+---
+
+<a href={href} class={`btn btn--${variant} ${className}`.trim()}>{label}</a>

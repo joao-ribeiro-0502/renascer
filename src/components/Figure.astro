@@ -1,0 +1,30 @@
+---
+// Figura reutilizável com proporção, legenda e carregamento preguiçoso.
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  ratio?: string; // ex.: "16 / 10"
+  loading?: 'lazy' | 'eager';
+  hoverable?: boolean;
+  sizes?: string;
+}
+const {
+  src,
+  alt,
+  caption,
+  ratio = '16 / 10',
+  loading = 'lazy',
+  hoverable = false,
+} = Astro.props;
+---
+
+<figure>
+  <div
+    class={`figure ${hoverable ? 'figure--hoverable' : ''}`.trim()}
+    style={`aspect-ratio:${ratio}`}
+  >
+    <img src={src} alt={alt} loading={loading} decoding="async" />
+  </div>
+  {caption && <figcaption class="figure__caption">{caption}</figcaption>}
+</figure>

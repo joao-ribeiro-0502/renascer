@@ -1,0 +1,112 @@
+---
+// Página "História" — linha do tempo estrutural, pronta para dados oficiais.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Figure from '../components/Figure.astro';
+import CTA from '../components/CTA.astro';
+import { timeline } from '../data/historia';
+---
+
+<BaseLayout
+  title="História"
+  description="Linha do tempo institucional da G.R.E.S. Renascer de Jacarepaguá — estrutura preparada para os marcos oficiais da escola."
+>
+  <PageHero
+    title="A história que a gente constrói junta"
+    eyebrow="Acervo"
+    lead="Uma linha do tempo em construção, reservada para os marcos oficiais da trajetória da escola."
+    crumbs={[{ label: 'História' }]}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="history-grid">
+        <div data-reveal>
+          <span class="eyebrow">Linha do tempo</span>
+          <h2 class="display-title">Marcos da trajetória</h2>
+          <p class="lead" style="margin-top:1.1rem">
+            Os períodos abaixo são estruturais: as datas e os fatos serão inseridos
+            mediante confirmação oficial, sem qualquer registro inventado.
+          </p>
+
+          <ol class="timeline">
+            {
+              timeline.map((entry) => (
+                <li class="timeline__item">
+                  {entry.period && <p class="timeline__period">{entry.period}</p>}
+                  <h3 class="timeline__title">{entry.title}</h3>
+                  <p class="timeline__text">{entry.text}</p>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+
+        <aside class="history-aside" data-reveal>
+          <Figure
+            src="/assets/images/school/historia-01.jpg"
+            alt="Grafismo institucional para a página de história da escola"
+            ratio="3 / 4"
+            caption="Acervo fotográfico · imagens oficiais a incorporar"
+          />
+          <div class="history-aside__note">
+            <h3 class="history-aside__title">Você tem fotos antigas da escola?</h3>
+            <p>
+              O acervo digital está aberto a contribuições da comunidade. Registros de
+              ensaios, desfiles e eventos podem ser encaminhados pelos canais oficiais de
+              contato.
+            </p>
+            <a class="arrow-link" href="/contato">Contribuir com o acervo</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <CTA
+    eyebrow="Memória viva"
+    title="A história continua a cada temporada"
+    text="Acompanhe os enredos de cada ano e as notícias que documentam o presente da escola."
+    primary={{ href: '/enredos', label: 'Ver enredos' }}
+    secondary={{ href: '/noticias', label: 'Ler notícias' }}
+  />
+</BaseLayout>
+
+<style>
+  .history-grid {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  @media (min-width: 960px) {
+    .history-grid {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      align-items: start;
+    }
+    .history-aside {
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+  }
+
+  .history-aside__note {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: var(--paper-alt);
+    border-left: 3px solid var(--red);
+  }
+
+  .history-aside__title {
+    font-size: var(--fs-h4);
+    margin-bottom: 0.6rem;
+  }
+
+  .history-aside__note p {
+    font-size: 0.93rem;
+    color: var(--muted);
+  }
+
+  .history-aside__note .arrow-link {
+    margin-top: 1rem;
+  }
+</style>

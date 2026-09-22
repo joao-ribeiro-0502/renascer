@@ -1,0 +1,205 @@
+---
+// Galeria visual com filtro por categoria e lightbox acessível.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { gallery, galleryCategories } from '../data/gallery';
+---
+
+<BaseLayout
+  title="Galeria"
+  description="Galeria de imagens da G.R.E.S. Renascer de Jacarepaguá — acervo visual da escola em construção."
+>
+  <PageHero
+    title="Galeria"
+    eyebrow="Acervo visual"
+    lead="Composições da identidade e registros da vida da escola reunidos em um acervo em construção."
+    crumbs={[{ label: 'Galeria' }]}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="filters" role="group" aria-label="Filtrar imagens por categoria">
+        {
+          galleryCategories.map((cat, i) => (
+            <button
+              type="button"
+              class={`filter ${i === 0 ? 'is-active' : ''}`}
+              data-filter={cat}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+            >
+              {cat}
+            </button>
+          ))
+        }
+      </div>
+
+      <p class="media-note" style="margin-bottom:1.75rem">
+        Imagens atuais: grafismos provisórios derivados da bandeira oficial · acervo
+        fotográfico a incorporar
+      </p>
+
+      <div class="masonry" id="gallery-grid">
+        {
+          gallery.map((item) => (
+            <div class="masonry__item" data-category={item.category}>
+              <button
+                type="button"
+                class="gallery-figure"
+                data-lightbox-src={item.src}
+                data-lightbox-alt={item.alt}
+                data-lightbox-caption={item.caption}
+                aria-label={`Ampliar imagem: ${item.caption}`}
+              >
+                <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
+                <span class="gallery-figure__label">{item.category}</span>
+              </button>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="filter-empty" id="gallery-empty" hidden role="status">
+        Nenhuma imagem nesta categoria.
+      </p>
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <dialog class="lightbox" id="lightbox" aria-label="Visualização de imagem">
+    <div class="lightbox__inner">
+      <button type="button" class="lightbox__btn lightbox__close" data-lb-close aria-label="Fechar visualização">✕</button>
+      <div class="lightbox__stage">
+        <img src="" alt="" id="lightbox-img" />
+      </div>
+      <div class="lightbox__bar">
+        <p class="lightbox__caption" id="lightbox-caption"></p>
+        <div class="lightbox__controls">
+          <button type="button" class="lightbox__btn" data-lb-prev aria-label="Imagem anterior">←</button>
+          <button type="button" class="lightbox__btn" data-lb-next aria-label="Próxima imagem">→</button>
+          <button type="button" class="lightbox__btn" data-lb-close aria-label="Fechar visualização">✕</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</BaseLayout>
+
+<style>
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .filter {
+    padding: 0.5rem 1.1rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    transition: all var(--dur) var(--ease);
+  }
+
+  .filter:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .filter.is-active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .masonry__item[hidden] {
+    display: none;
+  }
+
+  .filter-empty {
+    margin-top: 2rem;
+    padding: 2rem;
+    text-align: center;
+    border: 1px dashed var(--line);
+    color: var(--muted);
+  }
+
+  /* Suporte a teclado */
+  .gallery-figure:focus-visible {
+    outline: 2px solid var(--red-bright);
+    outline-offset: 3px;
+  }
+</style>
+
+<script>
+  // Filtro por categoria
+  const filterButtons = document.querySelectorAll<HTMLButtonElement>('.filter');
+  const items = document.querySelectorAll<HTMLElement>('#gallery-grid .masonry__item');
+  const emptyMsg = document.getElementById('gallery-empty');
+
+  filterButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter ?? 'Todos';
+      filterButtons.forEach((b) => {
+        const active = b === btn;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', String(active));
+      });
+      let visible = 0;
+      items.forEach((item) => {
+        const show = filter === 'Todos' || item.dataset.category === filter;
+        item.hidden = !show;
+        if (show) visible += 1;
+      });
+      if (emptyMsg) emptyMsg.hidden = visible > 0;
+    });
+  });
+
+  // Lightbox
+  const dialog = document.getElementById('lightbox') as HTMLDialogElement | null;
+  const img = document.getElementById('lightbox-img') as HTMLImageElement | null;
+  const caption = document.getElementById('lightbox-caption');
+  const triggers = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('.gallery-figure')
+  );
+  let currentIndex = 0;
+
+  const visibleTriggers = () => triggers.filter((t) => !(t.parentElement as HTMLElement)?.hidden);
+
+  const render = (index: number) => {
+    const list = visibleTriggers();
+    if (!list.length || !img || !caption) return;
+    currentIndex = (index + list.length) % list.length;
+    const trigger = list[currentIndex];
+    img.src = trigger.dataset.lightboxSrc ?? '';
+    img.alt = trigger.dataset.lightboxAlt ?? '';
+    caption.textContent = trigger.dataset.lightboxCaption ?? '';
+  };
+
+  triggers.forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const list = visibleTriggers();
+      render(list.indexOf(trigger));
+      dialog?.showModal();
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  dialog?.querySelectorAll('[data-lb-close]').forEach((btn) => {
+    btn.addEventListener('click', () => dialog.close());
+  });
+
+  dialog?.querySelector('[data-lb-prev]')?.addEventListener('click', () => render(currentIndex - 1));
+  dialog?.querySelector('[data-lb-next]')?.addEventListener('click', () => render(currentIndex + 1));
+
+  dialog?.addEventListener('close', () => {
+    document.body.style.overflow = '';
+    if (img) img.src = '';
+  });
+
+  dialog?.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') render(currentIndex - 1);
+    if (e.key === 'ArrowRight') render(currentIndex + 1);
+  });
+</script>

@@ -1,0 +1,19 @@
+---
+// Cabeçalho padrão de seção: eyebrow + título + texto de apoio + link opcional.
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  link?: { href: string; label: string };
+}
+const { eyebrow, title, lead, link } = Astro.props;
+---
+
+<header class="section-header" data-reveal>
+  <div class="section-header__text">
+    <span class="eyebrow">{eyebrow}</span>
+    <h2 class="display-title">{title}</h2>
+    {lead && <p class="lead">{lead}</p>}
+  </div>
+  {link && <a class="arrow-link" href={link.href}>{link.label}</a>}
+</header>

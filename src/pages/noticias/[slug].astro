@@ -1,0 +1,187 @@
+---
+// Página individual de notícia.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ButtonLink from '../../components/ButtonLink.astro';
+import CTA from '../../components/CTA.astro';
+import { getNews, getNewsBySlug } from '../../data/news';
+import { formatDate } from '../../utils/format';
+
+export function getStaticPaths() {
+  return getNews().map((item) => ({ params: { slug: item.slug } }));
+}
+
+const { slug } = Astro.params;
+const item = getNewsBySlug(slug ?? '');
+
+if (!item) {
+  throw new Error(`Notícia não encontrada: ${slug}`);
+}
+
+const relacionadas = getNews()
+  .filter((n) => n.slug !== item.slug && n.category === item.category)
+  .concat(getNews().filter((n) => n.slug !== item.slug && n.category !== item.category))
+  .slice(0, 3);
+---
+
+<BaseLayout title={item.title} description={item.excerpt} type="article">
+  <article>
+    <!-- Cabeçalho da notícia -->
+    <header class="post-hero">
+      <div class="post-hero__media" aria-hidden="true">
+        <img src={item.image} alt="" width="1400" height="900" fetchpriority="high" />
+      </div>
+      <div class="container post-hero__content">
+        <nav aria-label="Navegação estrutural">
+          <ol class="breadcrumb">
+            <li><a href="/">Início</a></li>
+            <li><a href="/noticias">Notícias</a></li>
+            <li><span aria-current="page">{item.category}</span></li>
+          </ol>
+        </nav>
+        <p class="post-hero__meta">
+          <span class="tag tag--red">{item.category}</span>
+          <time datetime={item.date}>{formatDate(item.date)}</time>
+        </p>
+        <h1 class="post-hero__title">{item.title}</h1>
+        {item.author && <p class="post-hero__author">Por {item.author}</p>}
+      </div>
+    </header>
+
+    <!-- Corpo -->
+    <div class="section">
+      <div class="container container--narrow">
+        <div class="prose post-body">
+          {item.content.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+
+        <div class="post-actions">
+          <ButtonLink href="/noticias" variant="ghost" label="Voltar às notícias" />
+          <ButtonLink href="/eventos" variant="primary" label="Ver a agenda" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Relacionadas -->
+    <section class="section section--alt">
+      <div class="container">
+        <header class="section-header">
+          <div class="section-header__text">
+            <span class="eyebrow">Continue lendo</span>
+            <h2 class="display-title">Notícias relacionadas</h2>
+          </div>
+          <a class="arrow-link" href="/noticias">Todas as notícias</a>
+        </header>
+
+        <div class="list-rows">
+          {
+            relacionadas.map((n) => (
+              <a class="list-row" href={`/noticias/${n.slug}`}>
+                <div>
+                  <p class="list-row__meta">
+                    <span>{n.category}</span>
+                    <time datetime={n.date}>{formatDate(n.date)}</time>
+                  </p>
+                  <h3 class="list-row__title">{n.title}</h3>
+                </div>
+                <span class="list-row__arrow" aria-hidden="true">
+                  →
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+  </article>
+
+  <CTA
+    eyebrow="Comunidade"
+    title="Receba o que acontece na escola"
+    text="A agenda de eventos e a galeria são atualizadas ao longo da temporada."
+    primary={{ href: '/eventos', label: 'Agenda' }}
+    secondary={{ href: '/galeria', label: 'Galeria' }}
+  />
+</BaseLayout>
+
+<style>
+  .post-hero {
+    position: relative;
+    color: var(--paper);
+    background: var(--ink);
+    overflow: hidden;
+  }
+
+  .post-hero__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .post-hero__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.42;
+  }
+
+  .post-hero__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(10, 10, 12, 0.75), rgba(10, 10, 12, 0.94));
+  }
+
+  .post-hero__content {
+    position: relative;
+    z-index: 1;
+    padding-block: calc(var(--header-h) + clamp(3rem, 7vw, 5rem)) clamp(2.75rem, 6vw, 4.5rem);
+  }
+
+  .post-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.6rem;
+    font-size: var(--fs-eyebrow);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(247, 244, 239, 0.75);
+  }
+
+  .post-hero .tag--red {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+
+  .post-hero__title {
+    margin-top: 1.2rem;
+    font-size: clamp(2rem, 4.6vw, 3.6rem);
+    font-weight: 700;
+    max-width: 24ch;
+  }
+
+  .post-hero__author {
+    margin-top: 1.2rem;
+    font-size: 0.9rem;
+    color: rgba(247, 244, 239, 0.7);
+  }
+
+  .post-body {
+    margin-inline: auto;
+    font-size: 1.08rem;
+  }
+
+  .post-body p:first-child {
+    font-size: var(--fs-lead);
+    color: var(--charcoal);
+  }
+
+  .post-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+</style>

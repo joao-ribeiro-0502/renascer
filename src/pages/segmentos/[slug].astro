@@ -1,0 +1,143 @@
+---
+// Página individual de segmento.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ButtonLink from '../../components/ButtonLink.astro';
+import CTA from '../../components/CTA.astro';
+import { getSegments, getSegmentBySlug } from '../../data/segments';
+
+export function getStaticPaths() {
+  return getSegments().map((segment) => ({ params: { slug: segment.slug } }));
+}
+
+const { slug } = Astro.params;
+const segment = getSegmentBySlug(slug ?? '');
+
+if (!segment) {
+  throw new Error(`Segmento não encontrado: ${slug}`);
+}
+
+const outros = getSegments().filter((s) => s.slug !== segment.slug);
+---
+
+<BaseLayout
+  title={segment.name}
+  description={`${segment.name} — segmento da G.R.E.S. Renascer de Jacarepaguá. ${segment.summary}`}
+>
+  <PageHero
+    title={segment.name}
+    eyebrow="Segmentos"
+    lead={segment.summary}
+    crumbs={[{ label: 'Segmentos', href: '/segmentos' }, { label: segment.name }]}
+    image={segment.image}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="detail-grid">
+        <div data-reveal>
+          <span class="eyebrow">Sobre o segmento</span>
+          <div class="prose" style="margin-top:1.4rem">
+            {segment.description.map((p) => <p>{p}</p>)}
+          </div>
+          <div class="btn-row">
+            <ButtonLink href="/contato" variant="primary" label="Quero participar" />
+            <ButtonLink href="/segmentos" variant="ghost" label="Todos os segmentos" />
+          </div>
+        </div>
+
+        <aside data-reveal>
+          <div class="figure">
+            <img
+              src={segment.image}
+              alt={segment.imageAlt}
+              loading="lazy"
+              decoding="async"
+              style="aspect-ratio:1"
+            />
+          </div>
+          <div class="aside-note">
+            <h2 class="aside-note__title">Estrutura do segmento</h2>
+            <dl class="ficha">
+              <div class="ficha__row">
+                <dt class="ficha__key">Coordenação</dt>
+                <dd class="ficha__value ficha__value--pending">A confirmar</dd>
+              </div>
+              <div class="ficha__row">
+                <dt class="ficha__key">Ensaios</dt>
+                <dd class="ficha__value ficha__value--pending">Conforme agenda</dd>
+              </div>
+              <div class="ficha__row">
+                <dt class="ficha__key">Inscrições</dt>
+                <dd class="ficha__value ficha__value--pending">A confirmar</dd>
+              </div>
+            </dl>
+          </div>
+        </aside>
+      </div>
+
+      <div class="others" data-reveal>
+        <h2 class="others__title">Outros segmentos</h2>
+        <ul class="others__list">
+          {
+            outros.map((s) => (
+              <li>
+                <a class="arrow-link" href={`/segmentos/${s.slug}`}>
+                  {s.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <CTA
+    eyebrow="Comunidade"
+    title="A escola é feita de gente como você"
+    text="Participar é ensaiar, aprender e fazer a tradição continuar."
+    primary={{ href: '/contato', label: 'Falar com a escola' }}
+    secondary={{ href: '/historia', label: 'Nossa história' }}
+  />
+</BaseLayout>
+
+<style>
+  .detail-grid {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  @media (min-width: 960px) {
+    .detail-grid {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  .aside-note {
+    margin-top: 1.5rem;
+  }
+
+  .aside-note__title {
+    font-size: var(--fs-h4);
+    margin-bottom: 0.75rem;
+  }
+
+  .others {
+    margin-top: clamp(3rem, 6vw, 5rem);
+    padding-top: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .others__title {
+    font-size: var(--fs-h3);
+    margin-bottom: 1.5rem;
+  }
+
+  .others__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.25rem;
+  }
+</style>

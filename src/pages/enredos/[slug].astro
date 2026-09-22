@@ -1,0 +1,181 @@
+---
+// Página individual de enredo.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ButtonLink from '../../components/ButtonLink.astro';
+import CTA from '../../components/CTA.astro';
+import { getEnredos, getEnredoBySlug } from '../../data/enredos';
+
+export function getStaticPaths() {
+  return getEnredos().map((enredo) => ({ params: { slug: enredo.slug } }));
+}
+
+const { slug } = Astro.params;
+const enredo = getEnredoBySlug(slug ?? '');
+
+if (!enredo) {
+  throw new Error(`Enredo não encontrado: ${slug}`);
+}
+
+const outros = getEnredos().filter((e) => e.slug !== enredo.slug).slice(0, 3);
+---
+
+<BaseLayout
+  title={`Enredo ${enredo.year} — ${enredo.title}`}
+  description={`${enredo.summary} Enredo da temporada de ${enredo.year} da G.R.E.S. Renascer de Jacarepaguá.`}
+  type="article"
+>
+  <PageHero
+    title={enredo.title}
+    eyebrow={`Enredo · Temporada ${enredo.year}`}
+    lead={enredo.summary}
+    crumbs={[{ label: 'Enredos', href: '/enredos' }, { label: String(enredo.year) }]}
+    image={enredo.image}
+  />
+
+  <article class="section">
+    <div class="container">
+      <div class="detail-grid">
+        <div data-reveal>
+          <span class="eyebrow">Sobre o enredo</span>
+          <div class="prose" style="margin-top:1.4rem">
+            {enredo.paragraphs.map((p) => <p>{p}</p>)}
+          </div>
+
+          {
+            enredo.sambaTitle && (
+              <div class="samba">
+                <p class="samba__label">Samba-enredo</p>
+                <p class="samba__title">{enredo.sambaTitle}</p>
+                <p class="samba__authors">
+                  {enredo.sambaAuthors.length > 0
+                    ? enredo.sambaAuthors.join(' · ')
+                    : 'Compositores a confirmar com a diretoria da escola'}
+                </p>
+              </div>
+            )
+          }
+
+          <div class="btn-row">
+            <ButtonLink href="/enredos" variant="ghost" label="Voltar ao catálogo" />
+            <ButtonLink href="/carnaval" variant="primary" label="Área do carnaval" />
+          </div>
+        </div>
+
+        <aside data-reveal>
+          <span class="eyebrow">Ficha técnica</span>
+          <dl class="ficha">
+            {
+              enredo.ficha.map((row) => (
+                <div class="ficha__row">
+                  <dt class="ficha__key">{row.label}</dt>
+                  <dd class={row.value ? 'ficha__value' : 'ficha__value ficha__value--pending'}>
+                    {row.value ?? 'A confirmar'}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+          <p class="aside-note">
+            Registros oficiais de direção artística, compositores e integrantes serão
+            publicados somente após confirmação da escola.
+          </p>
+        </aside>
+      </div>
+    </div>
+  </article>
+
+  {
+    outros.length > 0 && (
+      <section class="section section--alt">
+        <div class="container">
+          <header class="section-header">
+            <div class="section-header__text">
+              <span class="eyebrow">Continue navegando</span>
+              <h2 class="display-title">Outros enredos</h2>
+            </div>
+            <a class="arrow-link" href="/enredos">
+              Catálogo completo
+            </a>
+          </header>
+          <div class="list-rows">
+            {outros.map((item) => (
+              <a class="list-row" href={`/enredos/${item.slug}`}>
+                <div>
+                  <p class="list-row__meta">
+                    <span>Temporada {item.year}</span>
+                  </p>
+                  <h3 class="list-row__title">{item.title}</h3>
+                </div>
+                <span class="list-row__arrow" aria-hidden="true">
+                  →
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <CTA
+    eyebrow="A escola"
+    title="Conheça a história por trás de cada enredo"
+    text="A página institucional reúne a identidade, a comunidade e a trajetória da Renascer."
+    primary={{ href: '/escola', label: 'A escola' }}
+    secondary={{ href: '/contato', label: 'Contato' }}
+  />
+</BaseLayout>
+
+<style>
+  .detail-grid {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  @media (min-width: 960px) {
+    .detail-grid {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      align-items: start;
+    }
+    .detail-grid aside {
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+  }
+
+  .samba {
+    margin-top: 2.5rem;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    background: var(--charcoal);
+    color: var(--paper);
+    border-left: 4px solid var(--red);
+  }
+
+  .samba__label {
+    font-size: var(--fs-eyebrow);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted-light);
+  }
+
+  .samba__title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    margin-top: 0.6rem;
+  }
+
+  .samba__authors {
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+    color: rgba(247, 244, 239, 0.7);
+  }
+
+  .aside-note {
+    margin-top: 1.25rem;
+    font-size: 0.86rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+</style>

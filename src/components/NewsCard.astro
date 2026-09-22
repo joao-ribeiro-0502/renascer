@@ -1,0 +1,24 @@
+---
+// Card de notícia — usado nas listagens e na home.
+import type { NewsItem } from '../data/types';
+import { formatDate } from '../utils/format';
+
+interface Props {
+  item: NewsItem;
+}
+const { item } = Astro.props;
+---
+
+<a class="content-card" href={`/noticias/${item.slug}`}>
+  <div class="content-card__media">
+    <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />
+  </div>
+  <div class="content-card__body">
+    <p class="content-card__meta">
+      <span class="tag tag--red">{item.category}</span>
+      <time datetime={item.date}>{formatDate(item.date)}</time>
+    </p>
+    <h3 class="content-card__title">{item.title}</h3>
+    <p class="content-card__excerpt">{item.excerpt}</p>
+  </div>
+</a>
