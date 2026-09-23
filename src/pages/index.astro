@@ -35,47 +35,24 @@ const carnaval2027 = {
     'A escola prepara para o Carnaval 2027 um enredo sobre mulheres que se recusam a calar a voz — o tema que a Renascer levará à avenida.',
 };
 
-// Slides do carrossel de abertura (fotos reais em /assets/images/hero/).
+// Slides do carrossel de abertura — somente fotos, sem texto por cima da
+// imagem (fotos reais em /assets/images/hero/).
 const heroSlides = [
   {
     img: '/assets/images/hero/foto-1',
     alt: 'Bandeira oficial da Renascer de Jacarepaguá erguida durante solenidade na escola',
-    eyebrow: `${site.acronym} · ${site.location}`,
-    title: 'Renascer',
-    titleSuffix: 'de Jacarepaguá',
-    long: false,
-    lead: 'Uma escola de samba feita de história, cultura e comunidade — o samba que nasce em Jacarepaguá e pulsa o ano inteiro.',
-    cta: { href: '/escola', label: 'Conhecer a escola' },
   },
   {
     img: '/assets/images/hero/foto-2',
     alt: 'Casal de mestre-sala e porta-bandeira da Renascer em apresentação no salão da escola',
-    eyebrow: 'Carnaval 2027 · Em preparação',
-    title: 'A Renascer Será a Voz Dessas Mulheres... Que Nunca Mais Serão Silenciadas',
-    titleSuffix: '',
-    long: true,
-    lead: 'O tema da temporada que a escola está preparando para a avenida.',
-    cta: { href: '/carnaval', label: 'Área do carnaval' },
   },
   {
     img: '/assets/images/hero/foto-4',
     alt: 'Integrantes da bateria da Renascer em ensaio, tocando pandeiros',
-    eyebrow: 'Agenda da temporada',
-    title: 'Ensaios, encontros e a rotina que faz a escola acontecer',
-    titleSuffix: '',
-    long: true,
-    lead: 'Acompanhe as próximas atividades e os compromissos da Renascer.',
-    cta: { href: '/eventos', label: 'Ver a agenda' },
   },
   {
     img: '/assets/images/hero/foto-3',
     alt: 'Integrantes da comunidade da Renascer reunidas em foto de grupo',
-    eyebrow: 'Nossa história',
-    title: 'De Jacarepaguá para a avenida: a trajetória da Renascer',
-    titleSuffix: '',
-    long: true,
-    lead: 'Conheça as raízes da escola e os marcos de uma trajetória construída em Jacarepaguá.',
-    cta: { href: '/historia', label: 'Nossa história' },
   },
 ];
 ---
@@ -88,6 +65,9 @@ const heroSlides = [
     aria-roledescription="carrossel"
     aria-label="Destaques da página inicial"
   >
+    <!-- h1 oculto: sem texto visível no hero, mas preservando heading para
+         SEO e leitores de tela (exigido também pelo check do projeto). -->
+    <h1 class="visually-hidden">{site.fullName}</h1>
     <div class="hero__slides">
       {
         heroSlides.map((slide, i) => (
@@ -110,28 +90,6 @@ const heroSlides = [
                 fetchpriority={i === 0 ? 'high' : 'auto'}
                 decoding="async"
               />
-            </div>
-            <div class="container hero-slide__content">
-              <span class="eyebrow">{slide.eyebrow}</span>
-              {i === 0 ? (
-                <h1 class="hero-slide__title">
-                  {slide.title}
-                  {slide.titleSuffix && (
-                    <>
-                      <br />
-                      <em>{slide.titleSuffix}</em>
-                    </>
-                  )}
-                </h1>
-              ) : (
-                <h2 class={`hero-slide__title${slide.long ? ' hero-slide__title--long' : ''}`}>
-                  {slide.title}
-                </h2>
-              )}
-              <p class="hero-slide__lead">{slide.lead}</p>
-              <div class="btn-row">
-                <ButtonLink href={slide.cta.href} variant="primary" label={slide.cta.label} />
-              </div>
             </div>
           </article>
         ))
@@ -158,7 +116,7 @@ const heroSlides = [
               class={`hero__dot${i === 0 ? ' is-active' : ''}`}
               type="button"
               data-hero-dot={i}
-              aria-label={`Ir para o slide ${i + 1} de ${heroSlides.length}: ${slide.eyebrow}`}
+              aria-label={`Ir para o slide ${i + 1} de ${heroSlides.length}`}
               aria-current={i === 0 ? 'true' : undefined}
             />
           ))
@@ -237,18 +195,6 @@ const heroSlides = [
             aria-label="Abrir a arte oficial do enredo do Carnaval 2027 em tamanho completo"
           >
             <img src={carnaval2027.image} alt={carnaval2027.imageAlt} loading="lazy" decoding="async" />
-            <span class="media-zoom__hint" aria-hidden="true">
-              <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path
-                  d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"></path>
-              </svg>
-              Ampliar
-            </span>
           </button>
           <span class="feature__year" aria-hidden="true">{carnaval2027.year}</span>
         </div>
@@ -340,17 +286,6 @@ const heroSlides = [
               aria-label={`Ampliar foto: ${item.caption}`}
             >
               <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
-              <span class="strip__zoom" aria-hidden="true">
-                <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path
-                    d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                </svg>
-              </span>
             </button>
           ))
         }
@@ -471,7 +406,8 @@ const heroSlides = [
     </div>
   </section>
 
-  <!-- Lightbox da home — foto da galeria e arte do enredo -->
+  <!-- Lightbox da home — foto da galeria, arte do enredo e retratos da
+       diretoria. Legenda grudada embaixo da foto e um único ✕ (o do topo). -->
   <dialog class="lightbox" data-lightbox aria-label="Visualização de imagem">
     <div class="lightbox__inner">
       <button
@@ -483,15 +419,10 @@ const heroSlides = [
         ✕
       </button>
       <div class="lightbox__stage">
-        <img src="" alt="" data-lb-img />
-      </div>
-      <div class="lightbox__bar">
-        <p class="lightbox__caption" data-lb-caption></p>
-        <div class="lightbox__controls">
-          <button type="button" class="lightbox__btn" data-lb-close aria-label="Fechar visualização">
-            ✕
-          </button>
-        </div>
+        <figure class="lightbox__figure">
+          <img src="" alt="" data-lb-img />
+          <figcaption class="lightbox__caption" data-lb-caption></figcaption>
+        </figure>
       </div>
     </div>
   </dialog>
@@ -521,8 +452,6 @@ const heroSlides = [
   .hero-slide {
     position: absolute;
     inset: 0;
-    display: flex;
-    align-items: flex-end;
     opacity: 0;
     visibility: hidden;
     transition: opacity 1s var(--ease), visibility 1s var(--ease);
@@ -546,52 +475,19 @@ const heroSlides = [
     object-position: center 35%;
   }
 
+  /* Scrim leve: só o suficiente para o menu (topo) e os controles (base)
+     continuarem legíveis — a foto agora é a protagonista, sem texto. */
   .hero-slide__media::after {
     content: "";
     position: absolute;
     inset: 0;
     background: linear-gradient(
       to bottom,
-      rgba(10, 10, 12, 0.66) 0%,
-      rgba(10, 10, 12, 0.3) 40%,
-      rgba(10, 10, 12, 0.9) 100%
+      rgba(10, 10, 12, 0.52) 0%,
+      rgba(10, 10, 12, 0.12) 38%,
+      rgba(10, 10, 12, 0.22) 64%,
+      rgba(10, 10, 12, 0.62) 100%
     );
-  }
-
-  .hero-slide__content {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    padding-block: calc(var(--header-h) + 3rem) clamp(6rem, 12vh, 9rem);
-  }
-
-  .hero-slide__title {
-    font-size: var(--fs-hero);
-    font-weight: 700;
-    line-height: 1;
-    margin-top: 1.4rem;
-    text-shadow: 0 2px 30px rgba(0, 0, 0, 0.35);
-  }
-
-  /* Sufixo sem itálico: a letra "J" de Jacarepaguá precisa ficar legível */
-  .hero-slide__title em {
-    font-style: normal;
-    font-weight: 500;
-    color: #fff;
-  }
-
-  .hero-slide__title--long {
-    font-size: clamp(1.85rem, 3.8vw, 3.3rem);
-    line-height: 1.08;
-    font-weight: 600;
-    max-width: 24ch;
-  }
-
-  .hero-slide__lead {
-    margin-top: 1.3rem;
-    max-width: 54ch;
-    font-size: var(--fs-lead);
-    color: rgba(247, 244, 239, 0.85);
   }
 
   /* Controles — setas ao lado das barrinhas de progresso */
@@ -687,30 +583,32 @@ const heroSlides = [
     outline-offset: 3px;
   }
 
-  .media-zoom__hint {
-    position: absolute;
-    top: 0.9rem;
-    right: 0.9rem;
-    z-index: 1;
-    display: inline-flex;
+  /* Lightbox da home: a legenda (nome/cargo, títulos) vem logo abaixo da
+     foto — presa a ela, não no fim da tela — e existe só um ✕ (o do topo).
+     Só nesta página: /galeria mantém a barra com prev/next próprios. */
+  .lightbox__figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0.45rem 0.75rem;
-    background: rgba(10, 10, 12, 0.55);
-    border: 1px solid rgba(247, 244, 239, 0.4);
-    color: #fff;
-    font-size: 0.66rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    pointer-events: none;
-    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+    gap: 0.9rem;
+    max-width: 100%;
+    max-height: 100%;
   }
 
-  .media-zoom:hover .media-zoom__hint,
-  .media-zoom:focus-visible .media-zoom__hint {
-    background: var(--red);
-    border-color: var(--red);
+  .lightbox__stage .lightbox__figure img {
+    max-width: min(100%, 1100px);
+    max-height: calc(100dvh - 10rem);
+    object-fit: contain;
+  }
+
+  .lightbox__figure .lightbox__caption {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    text-align: center;
+    color: rgba(247, 244, 239, 0.88);
+    max-width: 56ch;
   }
 
   /* ---------- Apresentação ---------- */
@@ -761,27 +659,6 @@ const heroSlides = [
   .strip__item:focus-visible {
     outline: 2px solid #d9ad5e;
     outline-offset: 3px;
-  }
-
-  .strip__zoom {
-    position: absolute;
-    top: 0.6rem;
-    right: 0.6rem;
-    z-index: 1;
-    width: 30px;
-    height: 30px;
-    display: grid;
-    place-items: center;
-    background: rgba(10, 10, 12, 0.55);
-    border: 1px solid rgba(247, 244, 239, 0.4);
-    color: #fff;
-    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
-  }
-
-  .strip__item:hover .strip__zoom,
-  .strip__item:focus-visible .strip__zoom {
-    background: var(--red);
-    border-color: var(--red);
   }
 
   /* Retratos nas casas 4 e 5: recorte envolvendo o topo (rostos visíveis) */

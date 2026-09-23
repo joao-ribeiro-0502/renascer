@@ -9,7 +9,15 @@ const { role, name, photo } = Astro.props;
 ---
 
 <article class="dir-card" data-reveal>
-  <div class="dir-card__photo">
+  <button
+    type="button"
+    class="dir-card__photo"
+    data-lb-open
+    data-lb-src={photo}
+    data-lb-alt={`Retrato ilustrativo — ${role}`}
+    data-lb-caption={`${name} · ${role}`}
+    aria-label={`Ampliar foto: ${name} — ${role}`}
+  >
     <img
       src={photo}
       alt={`Retrato ilustrativo — ${role}`}
@@ -18,7 +26,7 @@ const { role, name, photo } = Astro.props;
       loading="lazy"
       decoding="async"
     />
-  </div>
+  </button>
   <div class="dir-card__body">
     <span class="dir-card__role">{role}</span>
     <h3 class="dir-card__name">{name}</h3>
@@ -31,11 +39,26 @@ const { role, name, photo } = Astro.props;
     flex-direction: column;
   }
 
+  /* Foto clicável: abre o lightbox com nome e cargo na legenda.
+     Sem badge visível (pedido do cliente) — só cursor e foco. */
   .dir-card__photo {
     position: relative;
-    overflow: hidden;
+    display: block;
+    width: 100%;
     aspect-ratio: 4 / 5;
+    padding: 0;
+    border: 0;
+    margin: 0;
+    overflow: hidden;
     background: var(--paper-deep);
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+  }
+
+  .dir-card__photo:focus-visible {
+    outline: 2px solid #d9ad5e;
+    outline-offset: 3px;
   }
 
   .dir-card__photo img {
