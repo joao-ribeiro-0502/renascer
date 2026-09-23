@@ -111,9 +111,20 @@ const commNav = [
       <p>
         © {year} {site.name}. Todos os direitos reservados.
       </p>
-      <p class="site-footer__demo">
-        Estrutura de site em fase de montagem — textos e imagens de demonstração serão
-        substituídos pelo conteúdo oficial.
+      <p class="site-footer__credit">
+        <img
+          src="/assets/images/trinarysolutions-mark.png"
+          alt=""
+          width="154"
+          height="160"
+          loading="lazy"
+          decoding="async"
+        />
+        <span>
+          Desenvolvido por{' '}<a href="https://trinarysolutions.com.br" target="_blank" rel="noopener noreferrer">
+            Trinary Solutions Software House
+          </a>
+        </span>
       </p>
     </div>
   </div>
@@ -230,7 +241,37 @@ const commNav = [
     color: var(--muted-light);
   }
 
-  .site-footer__demo {
-    max-width: 52ch;
+  /* Goteira para o botão "voltar ao topo" (fixo no canto) não cobrir o crédito */
+  @media (max-width: 1360px) {
+    .site-footer__bottom {
+      padding-right: 3.5rem;
+    }
+  }
+
+  /* Crédito de desenvolvimento — discreto, na linha de baixo */
+  .site-footer__credit {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    max-width: 44ch;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--muted-light);
+  }
+
+  .site-footer__credit img {
+    flex: none;
+    height: 16px;
+    width: auto;
+  }
+
+  .site-footer__credit a {
+    color: rgba(247, 244, 239, 0.78);
+    text-underline-offset: 2px;
+    transition: color 0.25s var(--ease);
+  }
+
+  .site-footer__credit a:hover {
+    color: #d9ad5e;
   }
 </style>

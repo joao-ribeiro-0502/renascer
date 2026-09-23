@@ -261,16 +261,18 @@ const isActive = (href?: string) => {
     color: var(--red);
   }
 
-  /* Botão hambúrguer */
-  .menu-toggle {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    width: 46px;
-    height: 46px;
-    padding: 10px;
-    border: 1px solid currentColor;
+  /* Botão hambúrguer — somente abaixo de 1024px (no desktop há nav completa) */
+  @media (max-width: 1023.98px) {
+    .menu-toggle {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 46px;
+      height: 46px;
+      padding: 10px;
+      border: 1px solid currentColor;
+    }
   }
 
   .menu-toggle__bar {

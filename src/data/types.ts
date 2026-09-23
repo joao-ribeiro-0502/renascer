@@ -101,6 +101,12 @@ export interface GalleryItem {
   category: string;
 }
 
+export interface DirectorateMember {
+  role: string;
+  name: string;
+  photo: string;
+}
+
 export interface TimelineEntry {
   period: string | null;
   title: string;

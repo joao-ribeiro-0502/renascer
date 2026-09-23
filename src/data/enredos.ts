@@ -18,7 +18,7 @@ export const enredos: Enredo[] = [
     ],
     sambaTitle: 'A luz que nos reúne',
     sambaAuthors: [],
-    image: '/assets/images/enredos/enredo-01.jpg',
+    image: '/assets/images/school/carnaval-01.jpg',
     imageAlt: 'Grafismo institucional do enredo de 2026 da Renascer de Jacarepaguá',
     ficha: [
       { label: 'Ano', value: '2026' },
@@ -46,7 +46,7 @@ export const enredos: Enredo[] = [
     ],
     sambaTitle: 'Água que faz o meu cantar',
     sambaAuthors: [],
-    image: '/assets/images/enredos/enredo-02.jpg',
+    image: '/assets/images/events/evento-02.jpg',
     imageAlt: 'Grafismo institucional do enredo de 2025 da Renascer de Jacarepaguá',
     ficha: [
       { label: 'Ano', value: '2025' },
@@ -71,7 +71,7 @@ export const enredos: Enredo[] = [
     ],
     sambaTitle: 'A raiz que me faz crescer',
     sambaAuthors: [],
-    image: '/assets/images/enredos/enredo-03.jpg',
+    image: '/assets/images/events/evento-03.jpg',
     imageAlt: 'Grafismo institucional do enredo de 2024 da Renascer de Jacarepaguá',
     ficha: [
       { label: 'Ano', value: '2024' },
@@ -95,7 +95,7 @@ export const enredos: Enredo[] = [
     ],
     sambaTitle: 'Minha cor, minha história',
     sambaAuthors: [],
-    image: '/assets/images/enredos/enredo-04.jpg',
+    image: '/assets/images/events/evento-04.jpg',
     imageAlt: 'Grafismo institucional do enredo de 2023 da Renascer de Jacarepaguá',
     ficha: [
       { label: 'Ano', value: '2023' },

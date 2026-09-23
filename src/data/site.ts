@@ -30,6 +30,7 @@ export const site: SiteInfo = {
 
 // Navegação global do site.
 export const nav: NavItem[] = [
+  { label: 'Início', href: '/' },
   {
     label: 'A Escola',
     href: '/escola',

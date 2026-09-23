@@ -1,53 +1,182 @@
 ---
-// Página inicial — apresentação institucional e porta de entrada do site.
+// Página inicial — carrossel de abertura, a escola, Carnaval 2027, diretoria,
+// agenda, galeria, segmentos e formulário de participação.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import ButtonLink from '../components/ButtonLink.astro';
 import Figure from '../components/Figure.astro';
 import EventCard from '../components/EventCard.astro';
-import CTA from '../components/CTA.astro';
+import DiretoriaCard from '../components/DiretoriaCard.astro';
 import { site } from '../data/site';
-import { getLatestNews } from '../data/news';
 import { getUpcomingEvents } from '../data/events';
 import { getLatestEnredo } from '../data/enredos';
 import { getSegments } from '../data/segments';
 import { gallery } from '../data/gallery';
-import { carnaval } from '../data/carnaval';
-import { formatDate } from '../utils/format';
+import { diretoria } from '../data/diretoria';
 
-const latestNews = getLatestNews(4);
-const [featured, ...restNews] = latestNews;
 const upcoming = getUpcomingEvents(3);
 const enredo = getLatestEnredo();
 const segments = getSegments();
 const strip = gallery.slice(0, 5);
+
+// Ficha do Carnaval 2027 — dados informados/publicados oficialmente.
+// Não inventar outros campos: manter somente o que foi confirmado.
+const carnaval2027 = {
+  year: 2027,
+  status: 'Em preparação',
+  enredo:
+    'A Renascer Será a Voz Dessas Mulheres... Que Nunca Mais Serão Silenciadas',
+  carnavalesco: 'Rodrigo Pacheco',
+  presidente: 'André Augusto (Dedé)',
+  interprete: 'Leonardo Bessa',
+  image: '/assets/images/enredos/enredo-oficial.jpg',
+  imageAlt: 'Arte oficial do enredo do Carnaval 2027 da Renascer de Jacarepaguá',
+  summary:
+    'A escola prepara para o Carnaval 2027 um enredo sobre mulheres que se recusam a calar a voz — o tema que a Renascer levará à avenida.',
+};
+
+// Slides do carrossel de abertura (fotos reais em /assets/images/hero/).
+const heroSlides = [
+  {
+    img: '/assets/images/hero/foto-1',
+    alt: 'Bandeira oficial da Renascer de Jacarepaguá erguida durante solenidade na escola',
+    eyebrow: `${site.acronym} · ${site.location}`,
+    title: 'Renascer',
+    titleSuffix: 'de Jacarepaguá',
+    long: false,
+    lead: 'Uma escola de samba feita de história, cultura e comunidade — o samba que nasce em Jacarepaguá e pulsa o ano inteiro.',
+    cta: { href: '/escola', label: 'Conhecer a escola' },
+  },
+  {
+    img: '/assets/images/hero/foto-2',
+    alt: 'Casal de mestre-sala e porta-bandeira da Renascer em apresentação no salão da escola',
+    eyebrow: 'Carnaval 2027 · Em preparação',
+    title: 'A Renascer Será a Voz Dessas Mulheres... Que Nunca Mais Serão Silenciadas',
+    titleSuffix: '',
+    long: true,
+    lead: 'O tema da temporada que a escola está preparando para a avenida.',
+    cta: { href: '/carnaval', label: 'Área do carnaval' },
+  },
+  {
+    img: '/assets/images/hero/foto-4',
+    alt: 'Integrantes da bateria da Renascer em ensaio, tocando pandeiros',
+    eyebrow: 'Agenda da temporada',
+    title: 'Ensaios, encontros e a rotina que faz a escola acontecer',
+    titleSuffix: '',
+    long: true,
+    lead: 'Acompanhe as próximas atividades e os compromissos da Renascer.',
+    cta: { href: '/eventos', label: 'Ver a agenda' },
+  },
+  {
+    img: '/assets/images/hero/foto-3',
+    alt: 'Integrantes da comunidade da Renascer reunidas em foto de grupo',
+    eyebrow: 'Nossa história',
+    title: 'De Jacarepaguá para a avenida: a trajetória da Renascer',
+    titleSuffix: '',
+    long: true,
+    lead: 'Conheça as raízes da escola e os marcos de uma trajetória construída em Jacarepaguá.',
+    cta: { href: '/historia', label: 'Nossa história' },
+  },
+];
 ---
 
 <BaseLayout>
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero__media" aria-hidden="true">
-      <img
-        src="/assets/images/hero/renascer-hero.jpg"
-        alt=""
-        width="1920"
-        height="1080"
-        fetchpriority="high"
-      />
+  <!-- HERO / CARROSSEL -->
+  <section
+    class="hero"
+    data-hero-carousel
+    aria-roledescription="carrossel"
+    aria-label="Destaques da página inicial"
+  >
+    <div class="hero__slides">
+      {
+        heroSlides.map((slide, i) => (
+          <article
+            class={`hero-slide${i === 0 ? ' is-active' : ''}`}
+            data-slide={i}
+            aria-hidden={i === 0 ? 'false' : 'true'}
+            aria-roledescription="slide"
+            aria-label={`${i + 1} de ${heroSlides.length}`}
+          >
+            <div class="hero-slide__media">
+              <img
+                src={`${slide.img}-1600.jpg`}
+                srcset={`${slide.img}-900.jpg 900w, ${slide.img}-1600.jpg 1600w, ${slide.img}-2400.jpg 2400w`}
+                sizes="100vw"
+                alt={slide.alt}
+                width="1600"
+                height="1067"
+                loading={i === 0 ? 'eager' : 'eager'}
+                fetchpriority={i === 0 ? 'high' : 'auto'}
+                decoding="async"
+              />
+            </div>
+            <div class="container hero-slide__content">
+              <span class="eyebrow">{slide.eyebrow}</span>
+              {i === 0 ? (
+                <h1 class="hero-slide__title">
+                  {slide.title}
+                  {slide.titleSuffix && (
+                    <>
+                      <br />
+                      <em>{slide.titleSuffix}</em>
+                    </>
+                  )}
+                </h1>
+              ) : (
+                <h2 class={`hero-slide__title${slide.long ? ' hero-slide__title--long' : ''}`}>
+                  {slide.title}
+                </h2>
+              )}
+              <p class="hero-slide__lead">{slide.lead}</p>
+              <div class="btn-row">
+                <ButtonLink href={slide.cta.href} variant="primary" label={slide.cta.label} />
+              </div>
+            </div>
+          </article>
+        ))
+      }
     </div>
-    <div class="container hero__content">
-      <span class="eyebrow">{site.acronym} · {site.location}</span>
-      <h1 class="hero__title">Renascer<br /><em>de Jacarepaguá</em></h1>
-      <p class="hero__lead">
-        Uma escola de samba feita de história, cultura e comunidade — o samba que nasce em
-        Jacarepaguá e pulsa o ano inteiro.
-      </p>
-      <div class="btn-row">
-        <ButtonLink href="/escola" variant="primary" label="Conhecer a escola" />
-        <ButtonLink href="/noticias" variant="ghost" label="Últimas notícias" />
+
+    <div class="hero__controls">
+      <button class="hero__arrow" type="button" data-hero-prev aria-label="Slide anterior">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path
+            d="M15 5l-7 7 7 7"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </button>
+
+      <div class="hero__dots" role="group" aria-label="Selecionar slide">
+        {
+          heroSlides.map((slide, i) => (
+            <button
+              class={`hero__dot${i === 0 ? ' is-active' : ''}`}
+              type="button"
+              data-hero-dot={i}
+              aria-label={`Ir para o slide ${i + 1} de ${heroSlides.length}: ${slide.eyebrow}`}
+              aria-current={i === 0 ? 'true' : undefined}
+            />
+          ))
+        }
       </div>
+
+      <button class="hero__arrow" type="button" data-hero-next aria-label="Próximo slide">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path
+            d="M9 5l7 7-7 7"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </button>
     </div>
-    <span class="hero__scroll" aria-hidden="true">Role</span>
   </section>
 
   <!-- APRESENTAÇÃO DA ESCOLA -->
@@ -56,24 +185,29 @@ const strip = gallery.slice(0, 5);
       <div class="two-col about">
         <div data-reveal>
           <span class="eyebrow">A escola</span>
-          <h2 class="display-title">
-            A Renascer é um ponto de encontro entre tradição, território e gente.
-          </h2>
+          <h2 class="display-title">Vermelho e branco, com raiz em Jacarepaguá.</h2>
           <div class="prose" style="margin-top:1.5rem">
             <p>
-              A {site.fullName} tem em Jacarepaguá o seu território e na comunidade a sua
-              razão de existir. Ao longo do ano, a escola reúne gerações em torno do samba,
-              do ensaio e da vida coletiva.
+              Fundada em 2 de agosto de 1992 e sediada no Largo do Tanque, a {site.fullName}
+              descende do bloco carnavalesco Bafo do Bode, nascido em Jacarepaguá em 1958.
+              De lá para cá, a escola transformou a folia de rua em uma das vozes do carnaval
+              do Rio de Janeiro.
             </p>
             <p>
-              Este site institucional reúne a história, o carnaval, as notícias, a agenda e o
-              acervo da Renascer em um só lugar — uma casa digital para quem faz a escola e
-              para quem quer se aproximar dela.
+              A trajetória da Renascer é feita de conquistas que marcaram a região: campeã do
+              Grupo D em 1999, vice-campeã de acesso em 2004 e campeã do Grupo A — a segunda
+              divisão do carnaval carioca — em 2011, o título que garantiu a estreia no Grupo
+              Especial, em 2012. Hoje na Série Prata, a escola renova a cada temporada a mesma
+              ambição de sempre.
+            </p>
+            <p>
+              Vermelho e branco no peito e a pomba branca ao lado do sol como símbolo, a
+              Renascer é uma escola de bairro: ensaios, comissões, segmentos e famílias em
+              torno do samba, com o Salgueiro como escola-madrinha e Jacarepaguá como casa.
             </p>
           </div>
           <div class="btn-row">
-            <a class="arrow-link" href="/escola">Saiba mais sobre a escola</a>
-            <a class="arrow-link" href="/historia" style="color:var(--muted)">Nossa história</a>
+            <a class="btn btn--ghost" href="/historia">Nossa história</a>
           </div>
         </div>
         <div data-reveal>
@@ -88,37 +222,57 @@ const strip = gallery.slice(0, 5);
     </div>
   </section>
 
-  <!-- DESTAQUE DO CARNAVAL ATUAL -->
+  <!-- CARNAVAL 2027 -->
   <section class="section section--dark">
     <div class="container">
       <div class="feature feature--split feature--reverse">
         <div class="feature__media" data-reveal>
-          <div class="figure figure--hoverable">
-            <img src={enredo.image} alt={enredo.imageAlt} loading="lazy" decoding="async" />
-          </div>
-          <span class="feature__year" aria-hidden="true">{carnaval.year}</span>
+          <button
+            type="button"
+            class="figure figure--hoverable media-zoom"
+            data-lb-open
+            data-lb-src={carnaval2027.image}
+            data-lb-alt={carnaval2027.imageAlt}
+            data-lb-caption={carnaval2027.imageAlt}
+            aria-label="Abrir a arte oficial do enredo do Carnaval 2027 em tamanho completo"
+          >
+            <img src={carnaval2027.image} alt={carnaval2027.imageAlt} loading="lazy" decoding="async" />
+            <span class="media-zoom__hint" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+              </svg>
+              Ampliar
+            </span>
+          </button>
+          <span class="feature__year" aria-hidden="true">{carnaval2027.year}</span>
         </div>
         <div data-reveal>
-          <span class="eyebrow">Carnaval {carnaval.year} · {carnaval.status}</span>
-          <h2 class="display-title">{enredo.title}</h2>
-          <p class="lead" style="margin-top:1.2rem">{enredo.summary}</p>
+          <span class="eyebrow">Carnaval {carnaval2027.year} · {carnaval2027.status}</span>
+          <h2 class="display-title">{carnaval2027.enredo}</h2>
+          <p class="lead" style="margin-top:1.2rem">{carnaval2027.summary}</p>
 
           <dl class="ficha">
             <div class="ficha__row">
-              <dt class="ficha__key">Samba-enredo</dt>
-              <dd class="ficha__value">{enredo.sambaTitle ?? '—'}</dd>
-            </div>
-            <div class="ficha__row">
-              <dt class="ficha__key">Compositores</dt>
-              <dd class="ficha__value ficha__value--pending">A confirmar</dd>
+              <dt class="ficha__key">Enredo</dt>
+              <dd class="ficha__value">{carnaval2027.enredo}</dd>
             </div>
             <div class="ficha__row">
               <dt class="ficha__key">Carnavalesco</dt>
-              <dd class="ficha__value ficha__value--pending">A confirmar</dd>
+              <dd class="ficha__value">{carnaval2027.carnavalesco}</dd>
+            </div>
+            <div class="ficha__row">
+              <dt class="ficha__key">Presidente</dt>
+              <dd class="ficha__value">{carnaval2027.presidente}</dd>
             </div>
             <div class="ficha__row">
               <dt class="ficha__key">Intérprete</dt>
-              <dd class="ficha__value ficha__value--pending">A confirmar</dd>
+              <dd class="ficha__value">{carnaval2027.interprete}</dd>
             </div>
           </dl>
 
@@ -131,50 +285,18 @@ const strip = gallery.slice(0, 5);
     </div>
   </section>
 
-  <!-- NOTÍCIAS -->
+  <!-- DIRETORIA -->
   <section class="section">
     <div class="container">
       <SectionHeader
-        eyebrow="Comunicação"
-        title="Notícias"
-        lead="Acompanhe o cotidiano da escola, os ensaios e os anúncios oficiais da comunicação institucional."
-        link={{ href: '/noticias', label: 'Todas as notícias' }}
+        eyebrow="Estrutura da escola"
+        title="Diretoria"
+        lead="Direção, carnaval, harmonia e bateria: a equipe que conduz a Renascer temporada a temporada e mantém a escola em movimento dentro e fora de campo."
       />
-
-      {
-        featured && (
-          <a class="featured-news" href={`/noticias/${featured.slug}`} data-reveal>
-            <div class="featured-news__media">
-              <img src={featured.image} alt={featured.imageAlt} loading="lazy" decoding="async" />
-            </div>
-            <div class="featured-news__body">
-              <p class="content-card__meta">
-                <span class="tag tag--red">{featured.category}</span>
-                <time datetime={featured.date}>{formatDate(featured.date)}</time>
-              </p>
-              <h3 class="featured-news__title">{featured.title}</h3>
-              <p class="featured-news__excerpt">{featured.excerpt}</p>
-              <span class="arrow-link">Ler notícia</span>
-            </div>
-          </a>
-        )
-      }
-
-      <div class="list-rows" style="margin-top:2.5rem" data-reveal>
+      <div class="dir-grid">
         {
-          restNews.map((n) => (
-            <a class="list-row" href={`/noticias/${n.slug}`}>
-              <div>
-                <p class="list-row__meta">
-                  <span>{n.category}</span>
-                  <time datetime={n.date}>{formatDate(n.date)}</time>
-                </p>
-                <h3 class="list-row__title">{n.title}</h3>
-              </div>
-              <span class="list-row__arrow" aria-hidden="true">
-                →
-              </span>
-            </a>
+          diretoria.map((member) => (
+            <DiretoriaCard role={member.role} name={member.name} photo={member.photo} />
           ))
         }
       </div>
@@ -208,13 +330,28 @@ const strip = gallery.slice(0, 5);
       <div class="strip" data-reveal>
         {
           strip.map((item, i) => (
-            <a
+            <button
+              type="button"
               class={`strip__item strip__item--${i + 1}`}
-              href="/galeria"
-              aria-label={`Ver galeria: ${item.caption}`}
+              data-lb-open
+              data-lb-src={item.src}
+              data-lb-alt={item.alt}
+              data-lb-caption={item.caption}
+              aria-label={`Ampliar foto: ${item.caption}`}
             >
               <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
-            </a>
+              <span class="strip__zoom" aria-hidden="true">
+                <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path
+                    d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+                </svg>
+              </span>
+            </button>
           ))
         }
       </div>
@@ -246,75 +383,361 @@ const strip = gallery.slice(0, 5);
     </div>
   </section>
 
-  <!-- CTA INSTITUCIONAL -->
-  <CTA
-    eyebrow="Faça parte"
-    title="A Renascer se faz com gente. A sua presença faz diferença."
-    text="Quer integrar um segmento, colaborar com a escola ou tirar dúvidas sobre a temporada? Fale com a comunicação institucional."
-    primary={{ href: '/contato', label: 'Entrar em contato' }}
-    secondary={{ href: '/segmentos', label: 'Conhecer os segmentos' }}
-  />
+  <!-- FAÇA PARTE / FORMULÁRIO -->
+  <section class="cta join" aria-labelledby="join-title">
+    <div class="cta__media" aria-hidden="true">
+      <img src="/assets/images/bandeira-textura.jpg" alt="" loading="lazy" decoding="async" />
+    </div>
+    <div class="container">
+      <div class="join__grid">
+        <div class="join__intro" data-reveal>
+          <span class="eyebrow">Participe</span>
+          <h2 class="cta__title" id="join-title">Faça parte</h2>
+          <p class="cta__text">
+            Se você quer participar, tirar uma dúvida ou colaborar com a escola, este é o
+            lugar. Conte para a gente o que você procura — a Renascer cresce com a presença de
+            cada pessoa.
+          </p>
+        </div>
+
+        <form class="join-form" data-join-form novalidate data-reveal>
+          <div class="join-form__row">
+            <div class="join-field">
+              <label for="join-nome">Nome</label>
+              <input
+                id="join-nome"
+                name="nome"
+                type="text"
+                autocomplete="name"
+                placeholder="Seu nome"
+                required
+                aria-describedby="join-nome-erro"
+              />
+              <span class="join-field__error" id="join-nome-erro" role="alert"></span>
+            </div>
+            <div class="join-field">
+              <label for="join-telefone">Telefone</label>
+              <input
+                id="join-telefone"
+                name="telefone"
+                type="tel"
+                autocomplete="tel"
+                placeholder="(21) 99999-9999"
+                required
+                aria-describedby="join-telefone-erro"
+              />
+              <span class="join-field__error" id="join-telefone-erro" role="alert"></span>
+            </div>
+          </div>
+
+          <div class="join-form__row">
+            <div class="join-field">
+              <label for="join-email">E-mail</label>
+              <input
+                id="join-email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                placeholder="voce@email.com"
+                required
+                aria-describedby="join-email-erro"
+              />
+              <span class="join-field__error" id="join-email-erro" role="alert"></span>
+            </div>
+          </div>
+
+          <div class="join-field">
+            <div class="join-field__head">
+              <label for="join-mensagem">Mensagem</label>
+              <span class="join-counter" data-counter aria-hidden="true">0 / 500</span>
+            </div>
+            <textarea
+              id="join-mensagem"
+              name="mensagem"
+              rows="5"
+              maxlength="500"
+              placeholder="Escreva sua mensagem (máximo de 500 caracteres)"
+              required
+              aria-describedby="join-mensagem-erro"></textarea>
+            <span class="join-field__error" id="join-mensagem-erro" role="alert"></span>
+          </div>
+
+          <div class="join-form__actions">
+            <button class="btn btn--light" type="submit">Enviar mensagem</button>
+            <p class="join-form__status" role="status" data-join-status hidden></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox da home — foto da galeria e arte do enredo -->
+  <dialog class="lightbox" data-lightbox aria-label="Visualização de imagem">
+    <div class="lightbox__inner">
+      <button
+        type="button"
+        class="lightbox__btn lightbox__close"
+        data-lb-close
+        aria-label="Fechar visualização"
+      >
+        ✕
+      </button>
+      <div class="lightbox__stage">
+        <img src="" alt="" data-lb-img />
+      </div>
+      <div class="lightbox__bar">
+        <p class="lightbox__caption" data-lb-caption></p>
+        <div class="lightbox__controls">
+          <button type="button" class="lightbox__btn" data-lb-close aria-label="Fechar visualização">
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
 </BaseLayout>
 
 <style>
-  /* Apresentação */
+  /* ---------- Carrossel do hero ---------- */
+  .hero {
+    position: relative;
+    display: block;
+    min-height: 94svh;
+    color: var(--paper);
+    overflow: hidden;
+  }
+
+  @media (min-width: 768px) {
+    .hero {
+      min-height: 100svh;
+    }
+  }
+
+  .hero__slides {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s var(--ease), visibility 1s var(--ease);
+  }
+
+  .hero-slide.is-active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 1;
+  }
+
+  .hero-slide__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-slide__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 35%;
+  }
+
+  .hero-slide__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 10, 12, 0.66) 0%,
+      rgba(10, 10, 12, 0.3) 40%,
+      rgba(10, 10, 12, 0.9) 100%
+    );
+  }
+
+  .hero-slide__content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding-block: calc(var(--header-h) + 3rem) clamp(6rem, 12vh, 9rem);
+  }
+
+  .hero-slide__title {
+    font-size: var(--fs-hero);
+    font-weight: 700;
+    line-height: 1;
+    margin-top: 1.4rem;
+    text-shadow: 0 2px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Sufixo sem itálico: a letra "J" de Jacarepaguá precisa ficar legível */
+  .hero-slide__title em {
+    font-style: normal;
+    font-weight: 500;
+    color: #fff;
+  }
+
+  .hero-slide__title--long {
+    font-size: clamp(1.85rem, 3.8vw, 3.3rem);
+    line-height: 1.08;
+    font-weight: 600;
+    max-width: 24ch;
+  }
+
+  .hero-slide__lead {
+    margin-top: 1.3rem;
+    max-width: 54ch;
+    font-size: var(--fs-lead);
+    color: rgba(247, 244, 239, 0.85);
+  }
+
+  /* Controles — setas ao lado das barrinhas de progresso */
+  .hero__controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 1.6rem;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(0.6rem, 2vw, 1.25rem);
+  }
+
+  .hero__arrow {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid rgba(247, 244, 239, 0.45);
+    background: rgba(10, 10, 12, 0.35);
+    color: var(--paper);
+    cursor: pointer;
+    transition: background-color 0.3s var(--ease), border-color 0.3s var(--ease),
+      color 0.3s var(--ease);
+  }
+
+  .hero__arrow:hover {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+  }
+
+  .hero__arrow:focus-visible {
+    outline: 2px solid #d9ad5e;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .hero__arrow {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  /* Indicadores — o slide atual é mais longo que os demais */
+  .hero__dots {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .hero__dot {
+    box-sizing: content-box;
+    width: 26px;
+    height: 3px;
+    padding: 14px 5px;
+    background-color: rgba(247, 244, 239, 0.4);
+    background-clip: content-box;
+    transition: width 0.5s var(--ease), background-color 0.5s var(--ease);
+  }
+
+  .hero__dot:hover {
+    background-color: rgba(247, 244, 239, 0.75);
+  }
+
+  .hero__dot.is-active {
+    width: 64px;
+    background-color: #d9ad5e;
+  }
+
+  .hero__dot.is-active:hover {
+    background-color: #d9ad5e;
+  }
+
+  /* ---------- Zoom de imagem (enredo e galeria) ---------- */
+  .media-zoom {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    text-align: inherit;
+    cursor: pointer;
+  }
+
+  .media-zoom:focus-visible {
+    outline: 2px solid #d9ad5e;
+    outline-offset: 3px;
+  }
+
+  .media-zoom__hint {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.75rem;
+    background: rgba(10, 10, 12, 0.55);
+    border: 1px solid rgba(247, 244, 239, 0.4);
+    color: #fff;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    pointer-events: none;
+    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+
+  .media-zoom:hover .media-zoom__hint,
+  .media-zoom:focus-visible .media-zoom__hint {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  /* ---------- Apresentação ---------- */
   .about {
     align-items: center;
   }
 
-  /* Notícia em destaque */
-  .featured-news {
+  /* ---------- Diretoria ---------- */
+  .dir-grid {
     display: grid;
-    gap: clamp(1.5rem, 4vw, 3rem);
-    align-items: center;
-    padding-bottom: 2.5rem;
-    border-bottom: 1px solid var(--line);
+    gap: clamp(1.5rem, 2.5vw, 2.1rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (min-width: 900px) {
-    .featured-news {
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  @media (min-width: 640px) {
+    .dir-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
-  .featured-news__media {
-    overflow: hidden;
-    aspect-ratio: 16 / 10;
-    background: var(--paper-deep);
+  @media (min-width: 1024px) {
+    .dir-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 
-  .featured-news__media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 1.1s var(--ease);
-  }
-
-  .featured-news:hover .featured-news__media img {
-    transform: scale(1.045);
-  }
-
-  .featured-news__title {
-    margin-top: 1rem;
-    font-size: clamp(1.5rem, 2.6vw, 2.15rem);
-    transition: color var(--dur) var(--ease);
-  }
-
-  .featured-news:hover .featured-news__title {
-    color: var(--red);
-  }
-
-  .featured-news__excerpt {
-    margin-top: 0.9rem;
-    color: var(--muted);
-    max-width: 58ch;
-  }
-
-  .featured-news .arrow-link {
-    margin-top: 1.25rem;
-  }
-
-  /* Faixa da galeria */
+  /* ---------- Faixa da galeria ---------- */
   .strip {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -322,10 +745,49 @@ const strip = gallery.slice(0, 5);
   }
 
   .strip__item {
+    position: relative;
     overflow: hidden;
     background: var(--charcoal-soft);
     grid-column: span 3;
     aspect-ratio: 4 / 3;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    text-align: inherit;
+    cursor: pointer;
+  }
+
+  .strip__item:focus-visible {
+    outline: 2px solid #d9ad5e;
+    outline-offset: 3px;
+  }
+
+  .strip__zoom {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    z-index: 1;
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    background: rgba(10, 10, 12, 0.55);
+    border: 1px solid rgba(247, 244, 239, 0.4);
+    color: #fff;
+    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+
+  .strip__item:hover .strip__zoom,
+  .strip__item:focus-visible .strip__zoom {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  /* Retratos nas casas 4 e 5: recorte envolvendo o topo (rostos visíveis) */
+  .strip__item--4 img,
+  .strip__item--5 img {
+    object-position: center 30%;
   }
 
   .strip__item img {
@@ -370,4 +832,365 @@ const strip = gallery.slice(0, 5);
       aspect-ratio: 16 / 9;
     }
   }
+
+  /* ---------- Faça parte (formulário) ---------- */
+  .join__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4.5rem);
+    padding-block: var(--section-pad);
+  }
+
+  @media (min-width: 960px) {
+    .join__grid {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      align-items: start;
+    }
+  }
+
+  .join__intro {
+    padding-top: 0.5rem;
+  }
+
+  .join-form {
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    background: rgba(10, 10, 12, 0.62);
+    border: 1px solid var(--line-light);
+    border-top: 3px solid var(--red);
+  }
+
+  .join-form__row {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .join-form__row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .join-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .join-field__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .join-field label {
+    font-size: var(--fs-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(247, 244, 239, 0.75);
+  }
+
+  .join-field input,
+  .join-field textarea {
+    font: inherit;
+    color: var(--paper);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgba(247, 244, 239, 0.35);
+    padding: 0.7rem 0;
+    transition: border-color var(--dur) var(--ease);
+  }
+
+  .join-field input::placeholder,
+  .join-field textarea::placeholder {
+    color: rgba(247, 244, 239, 0.38);
+  }
+
+  .join-field input:focus,
+  .join-field textarea:focus {
+    border-bottom-color: #d9ad5e;
+  }
+
+  .join-field textarea {
+    resize: vertical;
+    min-height: 130px;
+  }
+
+  .join-field input.is-invalid,
+  .join-field textarea.is-invalid {
+    border-bottom-color: #e16a70;
+  }
+
+  .join-field__error {
+    min-height: 1rem;
+    font-size: 0.78rem;
+    color: #ef8a90;
+  }
+
+  .join-field__error:empty {
+    display: none;
+  }
+
+  .join-counter {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: rgba(247, 244, 239, 0.55);
+  }
+
+  .join-counter.is-limit {
+    color: #ef8a90;
+  }
+
+  .join-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: 0.25rem;
+  }
+
+  .join-form__status {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: rgba(247, 244, 239, 0.88);
+    border-left: 3px solid #d9ad5e;
+    padding-left: 1rem;
+    max-width: 46ch;
+  }
 </style>
+
+<script>
+  // Carrossel do hero — avanço automático, setas, indicadores e teclado.
+  const root = document.querySelector<HTMLElement>('[data-hero-carousel]');
+
+  if (root) {
+    const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-slide]'));
+    const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-hero-dot]'));
+    const prev = root.querySelector<HTMLButtonElement>('[data-hero-prev]');
+    const next = root.querySelector<HTMLButtonElement>('[data-hero-next]');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const INTERVAL = 3500;
+
+    let index = 0;
+    let timer: number | undefined;
+    let hovering = false;
+
+    const show = (i: number) => {
+      index = (i + slides.length) % slides.length;
+      slides.forEach((slide, n) => {
+        const active = n === index;
+        slide.classList.toggle('is-active', active);
+        slide.setAttribute('aria-hidden', String(!active));
+      });
+      dots.forEach((dot, n) => {
+        const active = n === index;
+        dot.classList.toggle('is-active', active);
+        if (active) dot.setAttribute('aria-current', 'true');
+        else dot.removeAttribute('aria-current');
+      });
+    };
+
+    const stop = () => {
+      if (timer !== undefined) {
+        window.clearInterval(timer);
+        timer = undefined;
+      }
+    };
+
+    const start = () => {
+      if (reduceMotion) return;
+      stop();
+      timer = window.setInterval(() => show(index + 1), INTERVAL);
+    };
+
+    // O autoplay volta a rodar após qualquer navegação manual,
+    // exceto enquanto o ponteiro está sobre o carrossel.
+    const sync = () => {
+      if (hovering || document.hidden) stop();
+      else start();
+    };
+
+    const goManual = (i: number) => {
+      show(i);
+      sync();
+    };
+
+    prev?.addEventListener('click', () => goManual(index - 1));
+    next?.addEventListener('click', () => goManual(index + 1));
+    dots.forEach((dot, n) => dot.addEventListener('click', () => goManual(n)));
+
+    root.addEventListener('mouseenter', () => {
+      hovering = true;
+      stop();
+    });
+    root.addEventListener('mouseleave', () => {
+      hovering = false;
+      sync();
+    });
+
+    root.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goManual(index - 1);
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goManual(index + 1);
+      }
+    });
+
+    document.addEventListener('visibilitychange', sync);
+
+    show(0);
+    start();
+  }
+
+  // Formulário "Faça parte" — validação e contador de caracteres (sem backend).
+  interface JoinField {
+    el: HTMLInputElement | HTMLTextAreaElement;
+    errorId: string;
+    check: () => string | null;
+  }
+
+  const form = document.querySelector<HTMLFormElement>('[data-join-form]');
+
+  if (form) {
+    const nome = form.querySelector<HTMLInputElement>('#join-nome');
+    const telefone = form.querySelector<HTMLInputElement>('#join-telefone');
+    const email = form.querySelector<HTMLInputElement>('#join-email');
+    const mensagem = form.querySelector<HTMLTextAreaElement>('#join-mensagem');
+    const counter = form.querySelector<HTMLElement>('[data-counter]');
+    const status = form.querySelector<HTMLElement>('[data-join-status]');
+    const MAX = 500;
+
+    const fields: JoinField[] = [
+      {
+        el: nome!,
+        errorId: 'join-nome-erro',
+        check: () => {
+          const v = nome!.value.trim();
+          if (!v) return 'O nome é obrigatório.';
+          if (v.length < 2) return 'Informe seu nome completo.';
+          return null;
+        },
+      },
+      {
+        el: telefone!,
+        errorId: 'join-telefone-erro',
+        check: () => {
+          const v = telefone!.value.trim();
+          if (!v) return 'O telefone é obrigatório.';
+          const digits = v.replace(/\D/g, '').replace(/^55/, '');
+          if (digits.length < 10 || digits.length > 11) {
+            return 'Informe um telefone válido com DDD.';
+          }
+          return null;
+        },
+      },
+      {
+        el: email!,
+        errorId: 'join-email-erro',
+        check: () => {
+          const v = email!.value.trim();
+          if (!v) return 'O e-mail é obrigatório.';
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return 'Informe um e-mail válido.';
+          return null;
+        },
+      },
+      {
+        el: mensagem!,
+        errorId: 'join-mensagem-erro',
+        check: () => {
+          if (!mensagem!.value.trim()) return 'Escreva uma mensagem.';
+          if (mensagem!.value.length > MAX) {
+            return `A mensagem pode ter no máximo ${MAX} caracteres.`;
+          }
+          return null;
+        },
+      },
+    ];
+
+    const setError = (field: Field, msg: string | null) => {
+      const errorEl = document.getElementById(field.errorId);
+      field.el.classList.toggle('is-invalid', Boolean(msg));
+      field.el.setAttribute('aria-invalid', msg ? 'true' : 'false');
+      if (errorEl) errorEl.textContent = msg ?? '';
+      return msg;
+    };
+
+    const validate = (field: Field) => setError(field, field.check());
+
+    const syncCounter = () => {
+      if (!counter || !mensagem) return;
+      const length = mensagem.value.length;
+      counter.textContent = `${length} / ${MAX}`;
+      counter.classList.toggle('is-limit', length >= MAX);
+    };
+
+    mensagem?.addEventListener('input', syncCounter);
+    syncCounter();
+
+    fields.forEach((field) => {
+      field.el.addEventListener('blur', () => validate(field));
+      field.el.addEventListener('input', () => {
+        if (field.el.getAttribute('aria-invalid') === 'true') validate(field);
+      });
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let firstInvalid: HTMLElement | null = null;
+      for (const field of fields) {
+        const error = validate(field);
+        if (error && !firstInvalid) firstInvalid = field.el;
+      }
+      if (firstInvalid) {
+        if (status) status.hidden = true;
+        firstInvalid.focus();
+        return;
+      }
+      if (status) {
+        status.hidden = false;
+        status.textContent =
+          'Tudo certo! Seu formulário está validado — o envio será conectado ao canal oficial de contato da escola em breve. Obrigado pelo interesse na Renascer.';
+      }
+      form.reset();
+      syncCounter();
+    });
+  }
+
+  // Lightbox da home — a foto da galeria e a arte do enredo abrem em visualização.
+  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  const dialogImg = dialog?.querySelector<HTMLImageElement>('[data-lb-img]');
+  const dialogCaption = dialog?.querySelector<HTMLElement>('[data-lb-caption]');
+
+  if (dialog && dialogImg) {
+    document.querySelectorAll<HTMLElement>('[data-lb-open]').forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        dialogImg.src = trigger.dataset.lbSrc ?? '';
+        dialogImg.alt = trigger.dataset.lbAlt ?? '';
+        if (dialogCaption) dialogCaption.textContent = trigger.dataset.lbCaption ?? '';
+        dialog.showModal();
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    dialog.querySelectorAll<HTMLButtonElement>('[data-lb-close]').forEach((btn) => {
+      btn.addEventListener('click', () => dialog.close());
+    });
+
+    // Clique fora da imagem fecha a visualização.
+    dialog.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).classList.contains('lightbox__stage')) dialog.close();
+    });
+
+    dialog.addEventListener('close', () => {
+      document.body.style.overflow = '';
+      dialogImg.src = '';
+    });
+  }
+</script>

@@ -1,0 +1,11 @@
+Another astro preview server is already running.
+
+  URL:  http://localhost:4321
+  PID:  16864
+
+Run `astro preview stop` to stop it, or use `astro preview --force` to replace it.
+  [1mLocation:[22m
+    [4mC:\renascer-site\node_modules\astro\dist\cli\preview\index.js:124:11[24m
+  [1mStack trace:[22m
+[2m    at preview (file:///C:/renascer-site/node_modules/astro/dist/cli/preview/index.js:124:11)
+    at async runCommand (file:///C:/renascer-site/node_modules/astro/dist/cli/index.js:197:22)[22m
