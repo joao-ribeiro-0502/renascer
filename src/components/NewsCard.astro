@@ -5,11 +5,13 @@ import { formatDate } from '../utils/format';
 
 interface Props {
   item: NewsItem;
+  /** Destino do card; padrão é a página da notícia. A home usa '#' (páginas inativas). */
+  href?: string;
 }
-const { item } = Astro.props;
+const { item, href = `/noticias/${item.slug}` } = Astro.props;
 ---
 
-<a class="content-card" href={`/noticias/${item.slug}`}>
+<a class="content-card" href={href}>
   <div class="content-card__media">
     <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />
   </div>
@@ -22,3 +24,11 @@ const { item } = Astro.props;
     <p class="content-card__excerpt">{item.excerpt}</p>
   </div>
 </a>
+
+<style>
+  /* Data sempre em linha própria: títulos alinhados entre cards de qualquer
+     tamanho de data (evita a data "colada" ao chip quando o texto é curto). */
+  .content-card__meta time {
+    flex-basis: 100%;
+  }
+</style>

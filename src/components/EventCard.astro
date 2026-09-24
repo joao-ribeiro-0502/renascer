@@ -5,11 +5,13 @@ import { formatDay, formatMonthShort } from '../utils/format';
 
 interface Props {
   item: EventItem;
+  /** Destino do card; padrão é a página do evento. A home usa '#' (páginas inativas). */
+  href?: string;
 }
-const { item } = Astro.props;
+const { item, href = `/eventos/${item.slug}` } = Astro.props;
 ---
 
-<a class="event-card" href={`/eventos/${item.slug}`}>
+<a class="event-card" href={href}>
   <div class="event-card__date" aria-hidden="true">
     <span class="event-card__day">{formatDay(item.date)}</span>
     <span class="event-card__month">{formatMonthShort(item.date)}</span>

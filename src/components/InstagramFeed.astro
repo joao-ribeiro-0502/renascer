@@ -1,0 +1,200 @@
+---
+// Seção Instagram da home — widget demonstrativo do feed.
+// `profile` e `posts` chegam via props (src/data/instagram.ts); quando a API
+// real estiver disponível, basta trocar a origem dos dados do array.
+import type { InstagramPost, InstagramProfile } from '../data/instagram';
+import SectionHeader from './SectionHeader.astro';
+
+interface Props {
+  profile: InstagramProfile;
+  posts: InstagramPost[];
+}
+const { profile, posts } = Astro.props;
+---
+
+<section class="section">
+  <div class="container">
+    <SectionHeader
+      eyebrow="Redes sociais"
+      title="Instagram"
+      lead="O dia a dia da escola em imagens: ensaios, encontros e a comunidade Renascer."
+    />
+    <div class="ig" data-reveal>
+      <div class="ig__profile">
+        <img
+          class="ig__avatar"
+          src={profile.avatar}
+          alt={`Emblema da ${profile.name}`}
+          width="64"
+          height="64"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="ig__id">
+          <p class="ig__handle">{profile.handle}</p>
+          <p class="ig__name">{profile.name}</p>
+        </div>
+        <a class="btn btn--ghost ig__cta" href={profile.link}>Ver no Instagram</a>
+      </div>
+
+      <ul class="ig__grid">
+        {
+          posts.map((post) => (
+            <li class="ig__cell">
+              <a href={post.permalink} aria-label={`Publicação: ${post.caption}`}>
+                <img
+                  src={post.image}
+                  alt={post.alt}
+                  width="400"
+                  height="400"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="ig__stats" aria-hidden="true">
+                  <span>{post.likes} curtidas</span>
+                  <span>{post.comments} comentários</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ig {
+    display: grid;
+    gap: clamp(1.25rem, 2.5vw, 1.75rem);
+  }
+
+  /* Barra de perfil do feed */
+  .ig__profile {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(0.85rem, 2vw, 1.15rem);
+    padding: clamp(0.9rem, 2vw, 1.15rem) clamp(1rem, 2.5vw, 1.5rem);
+    background: var(--paper-alt);
+    border: 1px solid var(--line);
+  }
+
+  .ig__avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--gold);
+    background: var(--paper);
+    flex-shrink: 0;
+  }
+
+  .ig__id {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ig__handle {
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+
+  .ig__name {
+    margin-top: 0.15rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .ig__cta {
+    margin-left: auto;
+  }
+
+  /* Grade de publicações */
+  .ig__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.5rem, 1.2vw, 0.75rem);
+  }
+
+  .ig__cell a {
+    position: relative;
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--paper-deep);
+  }
+
+  .ig__cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s var(--ease);
+  }
+
+  .ig__cell a:hover img {
+    transform: scale(1.05);
+  }
+
+  .ig__stats {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.5rem;
+    background: rgba(23, 22, 26, 0.55);
+    color: #fff;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-align: center;
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+  }
+
+  .ig__cell a:hover .ig__stats,
+  .ig__cell a:focus-visible .ig__stats {
+    opacity: 1;
+  }
+
+  @media (min-width: 560px) {
+    .ig__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .ig__grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  /* Touch (sem hover): estatísticas sempre visíveis em faixa inferior. */
+  @media (hover: none) {
+    .ig__stats {
+      inset: auto 0 0;
+      flex-direction: row;
+      gap: 0.6rem;
+      padding: 0.35rem 0.4rem;
+      font-size: 0.66rem;
+      background: rgba(23, 22, 26, 0.72);
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 559px) {
+    .ig__avatar {
+      width: 56px;
+      height: 56px;
+    }
+
+    .ig__cta {
+      margin-left: 0;
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

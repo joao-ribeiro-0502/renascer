@@ -29,27 +29,30 @@ export const site: SiteInfo = {
 };
 
 // Navegação global do site.
+// ETAPA de aprovação da home: apenas a Home está ativa. Os itens mantêm os
+// mesmos rótulos, mas apontam para '#'. Para reativar uma página, basta
+// devolver o href correspondente (ex.: '/escola').
 export const nav: NavItem[] = [
   { label: 'Início', href: '/' },
   {
     label: 'A Escola',
-    href: '/escola',
+    href: '#',
     children: [
-      { label: 'A Escola', href: '/escola' },
-      { label: 'História', href: '/historia' },
-      { label: 'Segmentos', href: '/segmentos' },
+      { label: 'A Escola', href: '#' },
+      { label: 'História', href: '#' },
+      { label: 'Segmentos', href: '#' },
     ],
   },
   {
     label: 'Carnaval',
-    href: '/carnaval',
+    href: '#',
     children: [
-      { label: 'Carnaval', href: '/carnaval' },
-      { label: 'Enredos', href: '/enredos' },
+      { label: 'Carnaval', href: '#' },
+      { label: 'Enredos', href: '#' },
     ],
   },
-  { label: 'Notícias', href: '/noticias' },
-  { label: 'Agenda', href: '/eventos' },
-  { label: 'Galeria', href: '/galeria' },
-  { label: 'Contato', href: '/contato' },
+  { label: 'Notícias', href: '#' },
+  { label: 'Agenda', href: '#' },
+  { label: 'Galeria', href: '#' },
+  { label: 'Contato', href: '#' },
 ];

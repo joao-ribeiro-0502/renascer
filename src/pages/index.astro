@@ -1,23 +1,28 @@
 ---
 // Página inicial — carrossel de abertura, a escola, Carnaval 2027, diretoria,
-// agenda, galeria, segmentos e formulário de participação.
+// agenda, Instagram, notícias, galeria, segmentos e formulário de participação.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import ButtonLink from '../components/ButtonLink.astro';
 import Figure from '../components/Figure.astro';
 import EventCard from '../components/EventCard.astro';
 import DiretoriaCard from '../components/DiretoriaCard.astro';
+import InstagramFeed from '../components/InstagramFeed.astro';
+import NewsCard from '../components/NewsCard.astro';
 import { site } from '../data/site';
 import { getUpcomingEvents } from '../data/events';
 import { getLatestEnredo } from '../data/enredos';
 import { getSegments } from '../data/segments';
 import { gallery } from '../data/gallery';
 import { diretoria } from '../data/diretoria';
+import { getLatestNews } from '../data/news';
+import { instagramPosts, instagramProfile } from '../data/instagram';
 
 const upcoming = getUpcomingEvents(3);
 const enredo = getLatestEnredo();
 const segments = getSegments();
 const strip = gallery.slice(0, 5);
+const latestNews = getLatestNews(4);
 
 // Ficha do Carnaval 2027 — dados informados/publicados oficialmente.
 // Não inventar outros campos: manter somente o que foi confirmado.
@@ -165,7 +170,7 @@ const heroSlides = [
             </p>
           </div>
           <div class="btn-row">
-            <a class="btn btn--ghost" href="/historia">Nossa história</a>
+            <a class="btn btn--ghost" href="#">Nossa história</a>
           </div>
         </div>
         <div data-reveal>
@@ -223,8 +228,8 @@ const heroSlides = [
           </dl>
 
           <div class="btn-row">
-            <ButtonLink href="/carnaval" variant="light" label="Área do carnaval" />
-            <ButtonLink href={`/enredos/${enredo.slug}`} variant="ghost" label="Ver o enredo" />
+            <ButtonLink href="#" variant="light" label="Área do carnaval" />
+            <ButtonLink href="#" variant="ghost" label="Ver o enredo" />
           </div>
         </div>
       </div>
@@ -256,10 +261,28 @@ const heroSlides = [
         eyebrow="Agenda"
         title="Próximos eventos"
         lead="Ensaios, reuniões e apresentações que movimentam a temporada da escola."
-        link={{ href: '/eventos', label: 'Agenda completa' }}
+        link={{ href: '#', label: 'Agenda completa' }}
       />
       <div data-reveal>
-        {upcoming.map((event) => <EventCard item={event} />)}
+        {upcoming.map((event) => <EventCard item={event} href="#" />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTAGRAM -->
+  <InstagramFeed profile={instagramProfile} posts={instagramPosts} />
+
+  <!-- NOTÍCIAS -->
+  <section class="section section--alt">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Comunicação"
+        title="Notícias"
+        lead="Comunicados, preparação de temporada e acontecimentos da escola em um só lugar."
+        link={{ href: '#', label: 'Todas as notícias' }}
+      />
+      <div class="card-grid card-grid--4" data-reveal>
+        {latestNews.map((item) => <NewsCard item={item} href="#" />)}
       </div>
     </div>
   </section>
@@ -271,7 +294,7 @@ const heroSlides = [
         eyebrow="Acervo visual"
         title="Galeria"
         lead="Imagens da identidade, dos eventos e da vida da escola reunidas em um acervo em construção."
-        link={{ href: '/galeria', label: 'Abrir galeria' }}
+        link={{ href: '#', label: 'Abrir galeria' }}
       />
       <div class="strip" data-reveal>
         {
@@ -300,12 +323,12 @@ const heroSlides = [
         eyebrow="Comunidade"
         title="Segmentos"
         lead="Cada segmento guarda uma função, uma história e uma maneira própria de fazer a escola acontecer."
-        link={{ href: '/segmentos', label: 'Todos os segmentos' }}
+        link={{ href: '#', label: 'Todos os segmentos' }}
       />
       <div class="segment-list" data-reveal>
         {
           segments.map((segment, i) => (
-            <a class="segment-item" href={`/segmentos/${segment.slug}`}>
+            <a class="segment-item" href="#">
               <span class="segment-item__index">{String(i + 1).padStart(2, '0')}</span>
               <span>
                 <h3 class="segment-item__name">{segment.name}</h3>
@@ -854,7 +877,6 @@ const heroSlides = [
 
     let index = 0;
     let timer: number | undefined;
-    let hovering = false;
 
     const show = (i: number) => {
       index = (i + slides.length) % slides.length;
@@ -884,10 +906,10 @@ const heroSlides = [
       timer = window.setInterval(() => show(index + 1), INTERVAL);
     };
 
-    // O autoplay volta a rodar após qualquer navegação manual,
-    // exceto enquanto o ponteiro está sobre o carrossel.
+    // O avanço automático continua mesmo com o ponteiro sobre o hero;
+    // só pausa quando a aba fica oculta (ou com prefers-reduced-motion).
     const sync = () => {
-      if (hovering || document.hidden) stop();
+      if (document.hidden) stop();
       else start();
     };
 
@@ -899,15 +921,6 @@ const heroSlides = [
     prev?.addEventListener('click', () => goManual(index - 1));
     next?.addEventListener('click', () => goManual(index + 1));
     dots.forEach((dot, n) => dot.addEventListener('click', () => goManual(n)));
-
-    root.addEventListener('mouseenter', () => {
-      hovering = true;
-      stop();
-    });
-    root.addEventListener('mouseleave', () => {
-      hovering = false;
-      sync();
-    });
 
     root.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowLeft') {

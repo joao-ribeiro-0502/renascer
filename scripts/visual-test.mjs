@@ -165,11 +165,18 @@ async function newPage(width, height) {
   const after = await page.locator('[data-header]').evaluate((el) => el.classList.contains('is-scrolled'));
   if (before || !after) problems.push('[interação] header não alternou o estado no scroll');
 
-  // Navegação: clicar em item de menu chega na página certa
+  // Navegação: itens de páginas inativas apontam para '#' (etapa da home)
   await page.goto(BASE + '/', { waitUntil: 'networkidle' });
-  await page.locator('.nav-desktop a[href="/noticias"]').first().click();
-  await page.waitForURL('**/noticias');
-  if (!page.url().endsWith('/noticias')) problems.push('[interação] navegação do menu desktop falhou');
+  const menuHrefs = await page.$$eval('.nav-desktop a', (els) =>
+    els.map((e) => e.getAttribute('href'))
+  );
+  const inactive = menuHrefs.filter((h) => h !== '/' && h !== '#');
+  if (inactive.length)
+    problems.push(`[interação] menu com destino de página inativa: ${inactive.join(', ')}`);
+  await page.locator('.nav-desktop a', { hasText: 'Notícias' }).first().click();
+  await page.waitForTimeout(300);
+  if (!page.url().endsWith('/#'))
+    problems.push(`[interação] item inativo não levou para "#": ${page.url()}`);
 
   await context.close();
   console.log('✓ interações: filtros, lightbox, formulário, header e navegação verificados');
